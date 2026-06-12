@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>W-2 - Intent Accounting</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+         line-height: 1.6; color: #1a1a1a; max-width: 900px; margin: 0 auto; padding: 1.5rem; }
+  h1 { font-size: 1.6rem; margin-bottom: 0.5rem; }
+  h2 { font-size: 1.25rem; margin-top: 1.5rem; margin-bottom: 0.5rem; border-bottom: 1px solid #e5e7eb; padding-bottom: 0.25rem; }
+  h3 { font-size: 1.05rem; margin-top: 1rem; margin-bottom: 0.3rem; }
+  a { color: #2563eb; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  nav { margin-bottom: 1.5rem; font-size: 0.9rem; color: #6b7280; }
+  nav a { color: #6b7280; }
+  .terms { background: #f9fafb; border-left: 3px solid #d1d5db; padding: 0.75rem 1rem; margin: 0.5rem 0; }
+  .posting-card { border: 1px solid #e5e7eb; border-radius: 6px; padding: 0.75rem 1rem; margin: 0.5rem 0; }
+  .posting-card .meta { font-size: 0.85rem; color: #6b7280; }
+  .annotation { border-left: 3px solid #93c5fd; background: #eff6ff; padding: 0.75rem 1rem; margin: 0.5rem 0; }
+  .count { font-size: 0.9rem; color: #6b7280; }
+  table { border-collapse: collapse; width: 100%; margin: 0.5rem 0; }
+  th, td { text-align: left; padding: 0.4rem 0.75rem; border-bottom: 1px solid #e5e7eb; }
+  th { font-weight: 600; font-size: 0.85rem; color: #6b7280; text-transform: uppercase; letter-spacing: 0.03em; }
+  td { font-size: 0.95rem; }
+  .bookmark { background: #fef3c7; border: 1px solid #fbbf24; border-radius: 6px; padding: 0.75rem 1rem; margin: 1rem 0; }
+  .bookmark h3 { margin-top: 0; }
+  code { background: #f3f4f6; padding: 0.15em 0.3em; border-radius: 3px; font-size: 0.9em; }
+  footer { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #e5e7eb; font-size: 0.8rem; color: #9ca3af; }
+</style>
+</head>
+<body>
+<nav><a href="index.html">Index</a> / W-2</nav>
+<h1>W-2</h1>
+<p><span style="display:inline-block;padding:2px 8px;border-radius:4px;background:#d97706;color:#fff;font-size:0.85em;font-weight:600;">OPEN</span> <span style="font-size:0.9rem;color:#6b7280;">kind: commitment</span></p>
+<p style="margin:0.5rem 0;font-size:0.9rem;"><a href="converse.html?account=W-2&context=Fulfill%20this%20account&input=">fulfill this</a> &middot; <a href="converse.html?account=W-2&context=Add%20a%20note%20on%20W-2">note on this</a> &middot; <a href="converse.html?account=W-2&context=Verify%20fulfillment%20fulfill-W-2%20on%20W-2&input=">verify fulfill-W-2</a> &middot; <a href="converse.html?account=W-2&context=Annotate%20W-2">annotate</a></p>
+<h2>Terms</h2>
+<div class="terms">1. One write path, human-gated: every submission flows through K-5; the drafting LLM never submits; only postings explicitly confirmed by the human are submitted. 2. Ordinary language in: human expresses intent in plain text; LLM drafts canonical postings; ambiguous input becomes a drafted gap posting. 3. The confirmation is the surface: human sees each draft as it will land with approve/edit/discard per posting. 4. Authorship belongs to the confirmer: author field is the confirming human; drafted_by recorded in content. 5. References resolve at draft time: drafter reads current derived state before drafting. 6. Journal echo: after landing, surface shows the posting as it actually landed with link to browse surface. 7. Loop with W-1: browse pages link into this surface with pre-seeded context. 8. Supersession tripwire: self-declared identity sufficient at current trust scale; authentication account falls due when a second untrusted human can reach the surface. 9. Stock browser, no installation.</div>
+<h2>Postings (2)</h2>
+<div class="posting-card">
+    <p class="meta"><a href="posting-open-W-2.html">open-W-2</a> <strong>open</strong> by builder at 2026-06-12T03:00:01Z</p>
+    <p class="meta">accounts: <a href="account-W-2.html">W-2</a></p>
+    <p class="meta">vouchers: D-converse-surface</p>
+    
+    <div class="terms">1. One write path, human-gated: every submission flows through K-5; the drafting LLM never submits; only postings explicitly confirmed by the human are submitted. 2. Ordinary language in: human expresses intent in plain text; LLM drafts canonical postings; ambiguous input becomes a drafted gap posting. 3. The confirmation is the surface: human sees each draft as it will land with approve/edit/discard per posting. 4. Authorship belongs to the confirmer: author field is the confirming human; drafted_by recorded in content. 5. References resolve at draft time: drafter reads current derived state before drafting. 6. Journal echo: after landing, surface shows the posting as it actually landed with link to browse surface. 7. Loop with W-1: browse pages link into this surface with pre-seeded context. 8. Supersession tripwire: self-declared identity sufficient at current trust scale; authentication account falls due when a second untrusted human can reach the surface. 9. Stock browser, no installation.</div>
+  </div>
+<div class="posting-card">
+    <p class="meta"><a href="posting-fulfill-W-2.html">fulfill-W-2</a> <strong>fulfill</strong> by builder at 2026-06-12T03:01:02Z</p>
+    <p class="meta">accounts: <a href="account-W-2.html">W-2</a></p>
+    <p class="meta">vouchers: D-draft-js, D-converse-html, D-converse-surface</p>
+    
+    <p>Conversational posting surface built. Term 1: all submissions flow through K-5 POST /postings; the LLM drafts but never submits; only human-confirmed postings land. Term 2: plain text input; LLM (Anthropic or OpenAI, configurable via LLM_PROVIDER env) drafts canonical postings; reads current derived state for context; ambiguous input drafted as gap posting. Term 3: confirmation screen shows each draft as it will land -- kind, accounts, content -- with approve/edit/discard per posting. Term 4: author field set to confirming human name; drafted_by in content. Term 5: drafter reads /state before drafting for reference resolution. Term 6: journal echo shows landed posting with id and link to browse surface. Term 7: generate-site.js adds action links on account pages (fulfill this, verify this, note on this, annotate) with pre-seeded context into converse.html. Term 8: self-declared identity via name input; supersession tripwire documented. Term 9: stock HTML, no installation. Provider: Anthropic (claude-sonnet-4-20250514) or OpenAI (gpt-4o-mini), switchable via LLM_PROVIDER env var.</p>
+  </div>
+<h2>Annotations (1)</h2>
+<div class="annotation">
+        <p class="meta"><a href="posting-ann-W-2-advisory.html">ann-W-2-advisory</a> by builder at 2026-06-12T03:00:02Z</p>
+        <p>Advisory from work order: Single text box with draft-and-confirm beats chat widget for first settlement. One utterance may yield several postings (show as set, confirmable individually). Verify path seeded from W-1 is the most important interaction. Gap-drafting behavior deserves gentle prominence. This surface is the prototype of the shoebox intake -- design remembering the small-business owner audience.</p>
+        <p class="meta">cites: D-converse-surface</p>
+      </div>
+
+<footer>Intent Accounting instance. Generated from journal (2026-06-12). Read-only surface.</footer>
+</body>
+</html>

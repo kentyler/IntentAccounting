@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Post - Intent Accounting</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+         line-height: 1.6; color: #1a1a1a; max-width: 900px; margin: 0 auto; padding: 1.5rem; }
+  h1 { font-size: 1.6rem; margin-bottom: 0.25rem; }
+  h2 { font-size: 1.15rem; margin-top: 1.25rem; margin-bottom: 0.5rem; }
+  a { color: #2563eb; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  nav { margin-bottom: 1.5rem; font-size: 0.9rem; color: #6b7280; }
+  nav a { color: #6b7280; }
+
+  .identity { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; }
+  .identity label { font-size: 0.9rem; color: #6b7280; }
+  .identity input { padding: 0.35rem 0.5rem; border: 1px solid #d1d5db; border-radius: 4px;
+                     font-size: 0.9rem; width: 200px; }
+
+  .input-area { margin-bottom: 1rem; }
+  .input-area textarea { width: 100%; min-height: 100px; padding: 0.75rem; border: 1px solid #d1d5db;
+                          border-radius: 6px; font-size: 1rem; font-family: inherit; resize: vertical; }
+  .input-area textarea:focus { outline: none; border-color: #2563eb; box-shadow: 0 0 0 2px rgba(37,99,235,0.15); }
+
+  .context-bar { background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 6px;
+                  padding: 0.5rem 0.75rem; margin-bottom: 0.75rem; font-size: 0.85rem; color: #0369a1;
+                  display: flex; justify-content: space-between; align-items: center; }
+  .context-bar .dismiss { cursor: pointer; color: #6b7280; font-size: 0.8rem; }
+
+  button { padding: 0.5rem 1.25rem; border: none; border-radius: 6px; font-size: 0.95rem;
+           cursor: pointer; font-weight: 500; }
+  .btn-primary { background: #2563eb; color: #fff; }
+  .btn-primary:hover { background: #1d4ed8; }
+  .btn-primary:disabled { background: #93c5fd; cursor: not-allowed; }
+  .btn-approve { background: #059669; color: #fff; }
+  .btn-approve:hover { background: #047857; }
+  .btn-edit { background: #f59e0b; color: #fff; }
+  .btn-edit:hover { background: #d97706; }
+  .btn-discard { background: #dc2626; color: #fff; }
+  .btn-discard:hover { background: #b91c1c; }
+  .btn-sm { padding: 0.3rem 0.75rem; font-size: 0.85rem; }
+
+  .draft-card { border: 1px solid #e5e7eb; border-radius: 8px; padding: 1rem; margin: 0.75rem 0;
+                background: #fafafa; }
+  .draft-card.gap { border-color: #fbbf24; background: #fffbeb; }
+  .draft-meta { font-size: 0.85rem; color: #6b7280; margin-bottom: 0.5rem; }
+  .draft-field { margin: 0.25rem 0; }
+  .draft-field label { font-weight: 600; font-size: 0.85rem; color: #374151; }
+  .draft-field .value { font-size: 0.9rem; }
+  .draft-content { background: #fff; border: 1px solid #e5e7eb; border-radius: 4px;
+                    padding: 0.5rem 0.75rem; margin-top: 0.25rem; font-size: 0.9rem;
+                    white-space: pre-wrap; font-family: monospace; max-height: 200px; overflow-y: auto; }
+  .draft-actions { margin-top: 0.75rem; display: flex; gap: 0.5rem; }
+
+  .draft-edit-area { margin-top: 0.5rem; }
+  .draft-edit-area textarea { width: 100%; min-height: 120px; padding: 0.5rem; border: 1px solid #d1d5db;
+                               border-radius: 4px; font-family: monospace; font-size: 0.85rem; }
+
+  .echo { border: 1px solid #a7f3d0; background: #ecfdf5; border-radius: 8px;
+           padding: 0.75rem 1rem; margin: 0.75rem 0; }
+  .echo h3 { font-size: 0.95rem; color: #059669; margin-bottom: 0.25rem; }
+  .echo .meta { font-size: 0.85rem; color: #6b7280; }
+
+  .error { background: #fef2f2; border: 1px solid #fecaca; border-radius: 6px;
+            padding: 0.75rem; color: #991b1b; font-size: 0.9rem; margin: 0.75rem 0; }
+
+  .clarification { background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 8px;
+                    padding: 0.75rem 1rem; margin: 0.75rem 0; }
+
+  .spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid #93c5fd;
+              border-top-color: #2563eb; border-radius: 50%; animation: spin 0.6s linear infinite;
+              vertical-align: middle; margin-right: 0.5rem; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .terms-preview { background: #f9fafb; border-left: 3px solid #d1d5db;
+                    padding: 0.5rem 0.75rem; margin: 0.25rem 0; font-size: 0.85rem; color: #374151; }
+
+  footer { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #e5e7eb;
+            font-size: 0.8rem; color: #9ca3af; }
+</style>
+</head>
+<body>
+<nav><a href="index.html">Browse</a> / Post</nav>
+
+<h1>Post to the books</h1>
+<p style="color:#6b7280;font-size:0.9rem;margin-bottom:1rem;">
+  Say what you want in plain language. The system drafts the posting; you confirm before it lands.
+</p>
+
+<div class="identity">
+  <label for="author-input">Your name:</label>
+  <input type="text" id="author-input" value="ken" placeholder="your name">
+</div>
+
+<div id="context-area"></div>
+
+<div class="input-area">
+  <textarea id="user-input" placeholder="What would you like to post? e.g. &quot;I've verified W-1, it looks good&quot; or &quot;open an account for backup procedures&quot;"></textarea>
+</div>
+
+<button class="btn-primary" id="draft-btn" onclick="handleDraft()">Draft</button>
+
+<div id="output"></div>
+
+<footer>Intent Accounting conversational surface (W-2). Drafts via LLM; lands via K-5. Read-only without your confirmation.</footer>
+
+<script>
+const API = window.location.origin;
+let currentDrafts = [];
+
+// Pre-seeded context from URL params (term 7)
+const params = new URLSearchParams(window.location.search);
+const preContext = params.get("context");
+const preInput = params.get("input");
+const preAccount = params.get("account");
+
+if (preContext) {
+  const bar = document.getElementById("context-area");
+  bar.innerHTML = `<div class="context-bar">
+    <span>${escHtml(preContext)}</span>
+    <span class="dismiss" onclick="this.parentElement.remove()">dismiss</span>
+  </div>`;
+}
+if (preInput) {
+  document.getElementById("user-input").value = preInput;
+}
+
+function escHtml(s) {
+  const d = document.createElement("div");
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+async function handleDraft() {
+  const input = document.getElementById("user-input").value.trim();
+  if (!input) return;
+
+  const btn = document.getElementById("draft-btn");
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Drafting...';
+
+  const output = document.getElementById("output");
+  output.innerHTML = "";
+
+  try {
+    const contextStr = preContext
+      ? (preAccount ? `Account ${preAccount}: ${preContext}` : preContext)
+      : (preAccount ? `Account: ${preAccount}` : undefined);
+
+    const res = await fetch(`${API}/draft`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ input, context: contextStr }),
+    });
+
+    const data = await res.json();
+    if (!data.ok) {
+      output.innerHTML = `<div class="error">${escHtml(data.error)}</div>`;
+      return;
+    }
+
+    if (data.clarification) {
+      output.innerHTML = `<div class="clarification">
+        <strong>Question from the drafter:</strong><br>${escHtml(data.clarification)}
+      </div>`;
+      return;
+    }
+
+    currentDrafts = data.drafts;
+    renderDrafts(data.drafts, data.provider);
+  } catch (err) {
+    output.innerHTML = `<div class="error">${escHtml(err.message)}</div>`;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Draft";
+  }
+}
+
+async function fetchAccountInfo(accountId) {
+  try {
+    const res = await fetch(`${API}/state`);
+    const state = await res.json();
+    return state[accountId];
+  } catch { return null; }
+}
+
+function renderDrafts(drafts, provider) {
+  const output = document.getElementById("output");
+  output.innerHTML = `<h2>Drafts from ${escHtml(provider)} (${drafts.length})</h2>
+    <p style="font-size:0.85rem;color:#6b7280;">Review each posting below. Approve to land it in the journal, edit to modify, or discard.</p>`;
+
+  drafts.forEach((draft, i) => {
+    const isGap = draft.kind === "open" && draft.content && draft.content.account_kind === "gap";
+    const card = document.createElement("div");
+    card.className = `draft-card${isGap ? " gap" : ""}`;
+    card.id = `draft-${i}`;
+
+    // Resolve account names for human-legible display
+    const accountsDisplay = (draft.accounts || []).map(a => escHtml(a)).join(", ") || "-";
+    const vouchersDisplay = (draft.vouchers || []).map(v => escHtml(v)).join(", ") || "-";
+    const predsDisplay = (draft.predecessors || []).map(p => escHtml(p)).join(", ") || "-";
+
+    card.innerHTML = `
+      ${isGap ? '<div style="font-size:0.85rem;color:#92400e;font-weight:600;margin-bottom:0.5rem;">Drafted as a gap -- ambiguity has a place to live</div>' : ''}
+      <div class="draft-meta">#${i + 1} of ${drafts.length}</div>
+      <div class="draft-field"><label>Kind:</label> <span class="value">${escHtml(draft.kind)}</span></div>
+      <div class="draft-field"><label>ID:</label> <span class="value">${escHtml(draft.id)}</span></div>
+      <div class="draft-field"><label>Accounts:</label> <span class="value">${accountsDisplay}</span></div>
+      <div class="draft-field"><label>Vouchers:</label> <span class="value">${vouchersDisplay}</span></div>
+      <div class="draft-field"><label>Predecessors:</label> <span class="value">${predsDisplay}</span></div>
+      <div class="draft-field"><label>Content:</label>
+        <div class="draft-content">${escHtml(JSON.stringify(draft.content, null, 2))}</div>
+      </div>
+      <div class="draft-actions">
+        <button class="btn-approve btn-sm" onclick="approveDraft(${i})">Approve</button>
+        <button class="btn-edit btn-sm" onclick="editDraft(${i})">Edit</button>
+        <button class="btn-discard btn-sm" onclick="discardDraft(${i})">Discard</button>
+      </div>
+    `;
+    output.appendChild(card);
+  });
+}
+
+function editDraft(index) {
+  const card = document.getElementById(`draft-${index}`);
+  const draft = currentDrafts[index];
+  const existing = card.querySelector(".draft-edit-area");
+  if (existing) { existing.remove(); return; }
+
+  const area = document.createElement("div");
+  area.className = "draft-edit-area";
+  area.innerHTML = `
+    <textarea id="edit-json-${index}">${JSON.stringify(draft, null, 2)}</textarea>
+    <button class="btn-primary btn-sm" style="margin-top:0.5rem;" onclick="saveEdit(${index})">Save edit</button>
+  `;
+  card.querySelector(".draft-actions").before(area);
+}
+
+function saveEdit(index) {
+  const textarea = document.getElementById(`edit-json-${index}`);
+  try {
+    const edited = JSON.parse(textarea.value);
+    currentDrafts[index] = edited;
+    renderDrafts(currentDrafts, "edited");
+  } catch (e) {
+    alert("Invalid JSON: " + e.message);
+  }
+}
+
+function discardDraft(index) {
+  const card = document.getElementById(`draft-${index}`);
+  card.style.opacity = "0.4";
+  card.innerHTML = `<div style="color:#6b7280;font-style:italic;">Discarded. Never touches the journal.</div>`;
+  currentDrafts[index] = null;
+}
+
+async function approveDraft(index) {
+  const draft = currentDrafts[index];
+  if (!draft) return;
+
+  const author = document.getElementById("author-input").value.trim();
+  if (!author) {
+    alert("Please enter your name first.");
+    return;
+  }
+
+  // Term 4: authorship belongs to the confirmer
+  const posting = { ...draft, author };
+
+  // Update timestamp to now
+  posting.at = new Date().toISOString().replace(/\.\d+Z$/, "Z");
+
+  const card = document.getElementById(`draft-${index}`);
+  card.querySelector(".draft-actions").innerHTML = '<span class="spinner"></span> Submitting...';
+
+  try {
+    const res = await fetch(`${API}/postings`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(posting),
+    });
+
+    const data = await res.json();
+    if (!data.ok) {
+      card.querySelector(".draft-actions").innerHTML =
+        `<div class="error">Rejected: ${escHtml(data.errors.join("; "))}</div>
+         <button class="btn-edit btn-sm" onclick="editDraft(${index})">Edit & retry</button>`;
+      return;
+    }
+
+    // Term 6: journal echo
+    const landed = data.posting;
+    card.className = "echo";
+    card.innerHTML = `
+      <h3>Landed in the journal</h3>
+      <div class="meta">
+        <strong>${escHtml(landed.id)}</strong> (${escHtml(landed.kind)})
+        by ${escHtml(landed.author)} at ${escHtml(landed.at)}
+      </div>
+      <div style="margin-top:0.5rem;">
+        <a href="posting-${encodeURIComponent(landed.id)}.html" target="_blank">View on browse surface</a>
+        (regenerate site first: <code>node generate-site.js</code>)
+      </div>
+    `;
+    currentDrafts[index] = null;
+  } catch (err) {
+    card.querySelector(".draft-actions").innerHTML =
+      `<div class="error">${escHtml(err.message)}</div>`;
+  }
+}
+</script>
+</body>
+</html>
