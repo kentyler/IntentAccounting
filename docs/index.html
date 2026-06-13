@@ -1,0 +1,669 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Intent Accounting — a field guide. Why the scarce resource in the AI era is trust, not capability, and how legible, accountable books make machine work reliable. A navigable map of 32 ideas, from Goldratt's constraint to double-entry to the system itself.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Intent Accounting — a field guide">
+<meta property="og:description" content="The scarce resource in the AI era is trust, not capability. A navigable map of the idea, from Goldratt's constraint to double-entry bookkeeping to the system itself.">
+<meta property="og:url" content="https://intentaccounting.com">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#1B2433">
+<title>Intent Accounting — a field guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#ECEDE7; --paper-2:#E4E5DD; --panel:#F3F3EE;
+  --ink:#1B2433; --ink-soft:#515c6b; --ink-faint:#828c98;
+  --rule:#C2C8C2; --rule-blue:#AEBAC0;
+  --accent:#9C2B1E; --accent-tint:#efe0dc;
+  --entry:#46624E; --entry-tint:#dfe7df;
+  --display:'Fraunces',Georgia,'Times New Roman',serif;
+  --body:'IBM Plex Sans',system-ui,-apple-system,Segoe UI,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:var(--body); font-size:16px; line-height:1.6;
+  font-feature-settings:"liga" 1;
+}
+a{color:var(--accent)}
+.site-head{
+  border-bottom:1px solid var(--rule);
+  background:
+    repeating-linear-gradient(transparent, transparent 31px, rgba(174,186,192,.35) 31px, rgba(174,186,192,.35) 32px);
+  background-position:0 6px;
+}
+.head-inner{max-width:1180px; margin:0 auto; padding:48px 28px 38px}
+.eyebrow{
+  font-family:var(--mono); font-size:12px; letter-spacing:.16em;
+  text-transform:uppercase; color:var(--accent); margin:0 0 10px;
+}
+.site-title{
+  font-family:var(--display); font-optical-sizing:auto;
+  font-weight:600; font-size:clamp(40px,7vw,76px); line-height:.98;
+  letter-spacing:-.015em; margin:0 0 14px;
+}
+.site-thesis{
+  font-family:var(--display); font-weight:400; font-size:clamp(18px,2.4vw,23px);
+  line-height:1.4; max-width:40ch; margin:0 0 16px; color:var(--ink);
+}
+.site-orient{max-width:60ch; margin:0; color:var(--ink-soft); font-size:15.5px}
+.controls{
+  max-width:1180px; margin:0 auto; padding:18px 28px;
+  display:flex; flex-wrap:wrap; align-items:center; gap:10px;
+  border-bottom:1px solid var(--rule);
+}
+.ctrl-label{
+  font-family:var(--mono); font-size:11px; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--ink-faint); margin-right:6px;
+}
+.chip{
+  font-family:var(--mono); font-size:12.5px; color:var(--ink-soft);
+  background:var(--panel); border:1px solid var(--rule); border-radius:2px;
+  padding:7px 12px; cursor:pointer; transition:background .15s,color .15s,border-color .15s;
+}
+.chip:hover{border-color:var(--ink-faint); color:var(--ink)}
+.chip[aria-pressed="true"]{background:var(--ink); color:var(--paper); border-color:var(--ink)}
+.layout{
+  max-width:1180px; margin:0 auto; padding:26px 28px 60px;
+  display:grid; grid-template-columns:minmax(0,1.45fr) minmax(300px,1fr); gap:34px; align-items:start;
+}
+.map-wrap{
+  background:var(--panel); border:1px solid var(--rule); border-radius:3px;
+  padding:6px; overflow:auto;
+}
+#map{display:block; width:100%; height:auto; min-width:680px}
+.map-cap{
+  font-family:var(--mono); font-size:11px; color:var(--ink-faint);
+  letter-spacing:.06em; margin:10px 2px 0;
+}
+.map-cap b{color:var(--accent); font-weight:500}
+.map-cap i{color:var(--entry); font-style:normal; font-weight:500}
+.index{margin-top:30px}
+.index h2{
+  font-family:var(--mono); font-size:11px; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--ink-faint); border-bottom:1px solid var(--rule); padding-bottom:7px; margin:0 0 4px;
+}
+.idx-tier{margin:18px 0 0}
+.idx-tier-label{
+  font-family:var(--mono); font-size:11px; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--accent); margin:0 0 4px;
+}
+.idx-row{
+  display:flex; gap:10px; width:100%; text-align:left; background:none; border:0;
+  border-bottom:1px solid var(--rule); padding:8px 2px; cursor:pointer; align-items:baseline;
+  color:var(--ink); transition:background .12s;
+}
+.idx-row:hover{background:var(--paper-2)}
+.idx-id{font-family:var(--mono); font-size:12px; color:var(--ink-faint); min-width:30px}
+.idx-name{font-size:14.5px; line-height:1.35}
+.idx-row.is-hinge .idx-id{color:var(--accent)}
+.idx-row.is-entry .idx-id{color:var(--entry)}
+
+/* reader */
+.reader-col{position:sticky; top:18px}
+.reader{
+  background:var(--panel); border:1px solid var(--rule); border-radius:3px;
+  padding:26px 26px 22px; min-height:340px;
+}
+.r-tier{
+  font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--ink-faint); margin:0 0 10px;
+}
+.r-tier .r-id{color:var(--ink)}
+.r-title{
+  font-family:var(--display); font-weight:600; font-size:clamp(24px,3.4vw,32px);
+  line-height:1.08; letter-spacing:-.01em; margin:0 0 12px;
+}
+.r-badge{
+  display:inline-block; font-family:var(--mono); font-size:10.5px; letter-spacing:.08em;
+  text-transform:uppercase; padding:2px 7px; border-radius:2px; margin:0 0 12px; vertical-align:middle;
+}
+.r-badge.hinge{background:var(--accent-tint); color:var(--accent)}
+.r-badge.entry{background:var(--entry-tint); color:var(--entry)}
+.r-stub{
+  font-family:var(--display); font-weight:400; font-size:18.5px; line-height:1.42;
+  color:var(--ink); border-left:2px solid var(--accent); padding-left:14px; margin:0 0 18px;
+}
+.r-body p{margin:0 0 14px; font-size:15.5px}
+.r-deeper{
+  font-family:var(--mono); font-size:12px; letter-spacing:.06em; color:var(--accent);
+  background:none; border:0; border-top:1px solid var(--rule); width:100%; text-align:left;
+  padding:12px 0 0; cursor:pointer; margin-top:4px;
+}
+.r-deeper:hover{color:var(--ink)}
+.r-deep{margin-top:12px}
+.r-deep .r-deep-label{
+  font-family:var(--mono); font-size:10.5px; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--ink-faint); margin:0 0 6px;
+}
+.r-deep p{margin:0 0 12px; font-size:14.5px; color:var(--ink-soft)}
+.r-links{margin-top:18px; border-top:1px solid var(--rule); padding-top:14px}
+.r-grp{margin-bottom:12px}
+.r-grp h3{
+  font-family:var(--mono); font-size:10.5px; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--ink-faint); margin:0 0 6px; font-weight:500;
+}
+.linkrow{display:flex; flex-wrap:wrap; gap:6px}
+.nodelink{
+  font-family:var(--body); font-size:13px; color:var(--ink); background:var(--paper-2);
+  border:1px solid var(--rule); border-radius:2px; padding:4px 9px; cursor:pointer;
+  transition:border-color .12s,background .12s;
+}
+.nodelink:hover{border-color:var(--accent); color:var(--accent)}
+.nodelink .nl-id{font-family:var(--mono); font-size:11px; color:var(--ink-faint); margin-right:5px}
+.r-stepper{
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  margin-top:16px; border-top:1px solid var(--rule); padding-top:14px;
+}
+.r-stepper .step-pos{font-family:var(--mono); font-size:12px; color:var(--ink-faint)}
+.stepbtn{
+  font-family:var(--mono); font-size:12.5px; color:var(--ink); background:var(--paper-2);
+  border:1px solid var(--rule); border-radius:2px; padding:6px 12px; cursor:pointer;
+}
+.stepbtn:hover{border-color:var(--ink-faint)}
+.stepbtn[disabled]{opacity:.4; cursor:default}
+
+/* journal */
+.journal{
+  margin-top:22px; background:var(--panel); border:1px solid var(--rule); border-radius:3px;
+  padding:16px 18px 14px;
+}
+.journal h2{
+  font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--ink-faint); margin:0 0 4px; display:flex; justify-content:space-between; align-items:baseline;
+}
+.journal .j-sub{font-family:var(--body); font-size:11.5px; letter-spacing:0; text-transform:none; color:var(--ink-faint)}
+.journal-list{list-style:none; margin:8px 0 0; padding:0; max-height:230px; overflow:auto}
+.j-item{
+  display:grid; grid-template-columns:26px 34px 1fr; gap:8px; align-items:baseline;
+  font-family:var(--mono); font-size:12px; padding:5px 0; border-bottom:1px dotted var(--rule);
+  color:var(--ink-soft); cursor:pointer;
+}
+.j-item:hover{color:var(--ink)}
+.j-seq{color:var(--ink-faint)}
+.j-id{color:var(--accent)}
+.j-name{font-family:var(--body); font-size:12.5px; color:var(--ink); line-height:1.3}
+.j-empty{font-size:13px; color:var(--ink-faint); margin:8px 0 2px; font-style:italic}
+
+/* svg node states */
+.node{cursor:pointer}
+.node-box{fill:var(--paper-2); stroke:var(--rule); stroke-width:1.2; transition:stroke .15s,stroke-width .15s,fill .15s}
+.node:hover .node-box{stroke:var(--ink-faint)}
+.node.is-hinge .node-box{stroke:var(--accent); stroke-width:1.6}
+.node.is-entry .node-box{stroke:var(--entry); stroke-width:1.6}
+.node.is-current .node-box{stroke:var(--ink); stroke-width:2.4; fill:#fff}
+.node.is-dim{opacity:.26}
+.node-id{font-family:var(--mono); font-size:9px; fill:var(--ink-faint)}
+.node.is-hinge .node-id{fill:var(--accent)}
+.node.is-entry .node-id{fill:var(--entry)}
+.node-name{font-family:var(--body); font-size:10px; fill:var(--ink); font-weight:500}
+.edge{fill:none; stroke:var(--rule-blue); stroke-width:1; opacity:.55; transition:stroke .15s,opacity .15s,stroke-width .15s}
+.edge.is-lit{stroke:var(--ink); opacity:.9; stroke-width:1.6}
+.edge.is-path{stroke:var(--accent); opacity:.9; stroke-width:1.8}
+.edge.is-dim{opacity:.12}
+.band-label{font-family:var(--mono); font-size:10px; fill:var(--accent); letter-spacing:.08em; text-transform:uppercase}
+.band-rule{stroke:var(--rule); stroke-width:1}
+.node:focus{outline:none}
+.node:focus .node-box{stroke:var(--ink); stroke-width:2.4}
+
+.site-foot{
+  border-top:1px solid var(--rule); padding:26px 28px; max-width:1180px; margin:0 auto;
+  font-family:var(--mono); font-size:11.5px; color:var(--ink-faint); letter-spacing:.04em;
+}
+
+@media (max-width:880px){
+  .layout{grid-template-columns:1fr; gap:26px}
+  .reader-col{position:static}
+  .map-wrap{order:2}
+  .reader-col{order:1}
+  .index{order:3}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition:none !important}
+}
+</style>
+</head>
+<body>
+<header class="site-head">
+  <div class="head-inner">
+    <p class="eyebrow">A field guide</p>
+    <h1 class="site-title">Intent&nbsp;Accounting</h1>
+    <p class="site-thesis">A way of keeping the work of machines trustworthy enough that a person need only spend attention where attention is required.</p>
+    <p class="site-orient">This is a map, not a manual. No one reads all of it — you open the accounts your own judgment points to, at the depth you choose. Two accounts can be entered cold (marked in green); four hold the weight of the whole argument (marked in red). Follow one of the three paths, or wander.</p>
+  </div>
+</header>
+
+<div class="controls" id="controls">
+  <span class="ctrl-label">Follow a path</span>
+  <button class="chip" data-essay="none" aria-pressed="true">Wander</button>
+  <button class="chip" data-essay="E1" aria-pressed="false">I · The diagnosis</button>
+  <button class="chip" data-essay="E2" aria-pressed="false">II · The shape of the answer</button>
+  <button class="chip" data-essay="E3" aria-pressed="false">III · The system</button>
+</div>
+
+<main class="layout">
+  <section class="map-col">
+    <div class="map-wrap">
+      <svg id="map" role="img" aria-label="Concept map of Intent Accounting, organised in tiers from problem to frontier"></svg>
+    </div>
+    <p class="map-cap">Dependencies flow downward — an edge means <i>you need the upper before the lower is sayable</i>. <b>Red = hinge</b> · <i>green = entry point</i>.</p>
+    <nav class="index" id="index" aria-label="All accounts"></nav>
+  </section>
+
+  <aside class="reader-col">
+    <article id="reader" class="reader" aria-live="polite"></article>
+    <section class="journal" aria-label="Your reading journal">
+      <h2>Your journal <span class="j-sub" id="j-count"></span></h2>
+      <ol class="journal-list" id="journal-list"></ol>
+    </section>
+  </aside>
+</main>
+
+<footer class="site-foot">
+  Intent Accounting · a learning wiki. The accounts you open are posted, in order, to the journal — the resource is kept the way the system it describes is kept. Nothing here is erased.
+</footer>
+
+<script>
+/* ---------- data ---------- */
+const TIERS = [
+  {id:1, label:"The Problem", nodes:["P1","P2"]},
+  {id:2, label:"Diagnosis · Goldratt", nodes:["D1","D2","D3","D4"]},
+  {id:3, label:"Identifying the Constraint", nodes:["I1","I2","I3","I4","I5"]},
+  {id:4, label:"The Shape of Trust", nodes:["T1","T2","T3","T4","T5"]},
+  {id:5, label:"Prior Art · Double-Entry", nodes:["A1","A2","A3","A4","A5","A6"]},
+  {id:6, label:"The System", nodes:["S1","S2","S3","S4","S5","S6"]},
+  {id:7, label:"Frontier", nodes:["F1","F2","F3","F4"]}
+];
+
+const ESSAYS = {
+  E1:{name:"I · The diagnosis", path:["P1","P2","D1","D2","D3","D4","I1","I2","I3","I4","I5"]},
+  E2:{name:"II · The shape of the answer", path:["T1","T2","T3","T4","T5","A1","A2","A3","A4","A5","A6"]},
+  E3:{name:"III · The system", path:["S1","S2","S3","S4","S5","S6"]}
+};
+
+const N = {
+P1:{name:"The reskilling panic", tier:1, entry:true, deps:[], see:["D1"],
+ stub:"The claim that AI has multiplied what organisations must learn — and the dread that drives the whole market.",
+ para:"The defining anxiety of the moment is that AI has multiplied, tenfold the figures say, what every organisation and worker must now learn. The response is a scramble: courses, certifications, upskilling at scale, a whole industry promising to close the gap before some 2030 cliff. The panic is real and the figures are real. But a panic is not a diagnosis. Before accepting that the task is to learn vastly more, vastly faster, it is worth asking what kind of learning the number actually counts — and whether most of it is worth doing at all.",
+ deep:"The 78-million-jobs framing comes from workforce reports and is invoked by vendors whose pitch is to turn an organisation's documents into courses at machine speed. The framing treats learning as undifferentiated mass: tool-coping, coordination, and genuine domain shift all counted as one burden falling on one overloaded learner. Goldratt would hear in it the sound of a system trying to improve everywhere at once, which is to say improve nowhere. The interesting question is not how to learn faster, but which learning is real and which is inventory."},
+P2:{name:"Three responses", tier:1, deps:["P1"], see:[],
+ stub:"Everything being built sorts into three families: train the humans, automate the tasks, retrofit the trust.",
+ para:"Stand back from individual products and the field's response to AI sorts into three families. The first trains the humans — reskilling, courses, certification at scale. The second automates the tasks — agents that do the work instead of the person. The third retrofits the trust — evaluation harnesses, audit layers, attestation bolted on to check what the agents produced. Three industries, three pitches, one shared reflex: when the work strains, add capacity. Each is rational and well-funded. Each, it will turn out, pours capacity into a part of the system that was never the bottleneck.",
+ deep:"The three map onto a single Goldratt move performed wrongly. Training elevates human capacity; automation elevates production capacity; audit elevates checking capacity. All three are elevation — adding resource — and none has first identified the constraint. Worse, the trust-retrofit family is the field's own admission that the first two left the real problem untouched: if trained humans and fast agents were enough, no one would be building the cameras. The three families are not three answers. They are three ways of not asking the question."},
+
+D1:{name:"Constraints govern output", tier:2, entry:true, deps:[], see:[],
+ stub:"A system's throughput is set by its one binding point; effort spent elsewhere only looks like progress.",
+ para:"Eliyahu Goldratt's whole body of work rests on one observation: the output of any system is governed by its constraint — the single place where it binds — and effort spent anywhere else produces the appearance of improvement while changing nothing real. Speed up a machine that was never the bottleneck and you have not made more product; you have made a larger pile of half-finished work stacked in front of the bottleneck. The discipline that follows is not improve everything. It is find the one thing that binds, and treat everything else as subordinate to it.",
+ deep:"This is the Theory of Constraints, developed by Goldratt from the 1980s in The Goal and after. Its radicalism is in what it denies: that local efficiencies sum to global performance. An hour saved at a non-constraint is not saved at all — it is a mirage, because the system's output did not move. Most management instinct (keep everyone busy, optimise every department) is precisely the error TOC names. The constraint is the only place where improvement converts into throughput; everywhere else, improvement converts into inventory or illusion."},
+D2:{name:"Five focusing steps", tier:2, deps:["D1"], see:[],
+ stub:"Identify, exploit, subordinate, elevate, repeat — and the order is the whole discipline.",
+ para:"Goldratt's method is five steps, and their power is that they are ordered. First, identify the constraint. Second, decide how to wring the most from it as it stands. Third, subordinate everything else to that decision — pace the whole to the bottleneck. Fourth, only if it still binds, elevate it: add capacity. Fifth, when the constraint moves, begin again, and never keep optimising yesterday's bottleneck. Out of order the steps are nearly useless: you cannot exploit, subordinate to, or elevate a constraint you have not identified.",
+ deep:"The sequence is the antidote to the most common and expensive error: jumping to step four. Adding capacity — hiring, buying, building, training — feels like progress and is the reflex of any well-funded organisation under pressure. But elevation before identification spends resource on non-constraints, and elevation of the wrong thing yields nothing. The fifth step is the warning that any solution optimised for today's bottleneck becomes tomorrow's drag once the binding point moves. Identify first; the rest follows."},
+D3:{name:"Policy vs physical", tier:2, deps:["D1"], see:[],
+ stub:"The real constraint is usually an invisible policy, not a countable shortage — and policies disguise themselves as shortages.",
+ para:"Constraints come in two kinds. A physical constraint is a countable shortage — a machine, a person, an amount of compute — the kind you can see and buy more of. A policy constraint is a rule, a measurement, or an inherited assumption that limits the system. Goldratt's most unwelcome finding, from decades on factory floors, was that the real constraint is almost never the physical thing everyone is staring at. It is almost always a policy — invisible precisely because it feels like the furniture of reality rather than a choice that could be otherwise.",
+ deep:"Policy constraints have a signature: they disguise themselves as physical ones. A skills shortage looks like a headcount problem with a headcount solution — hire, train — when it is often downstream of a policy: a rule about who may do what, or what must be checked before it counts. Misreading a policy constraint as a physical one is the central error in Goldratt's corpus, and the most expensive, because resource poured at the shadow leaves the substance untouched. The Thinking Processes — his later toolset, including the Evaporating Cloud — exist precisely to surface and dissolve policy constraints, which cannot be relieved by adding resource."},
+D4:{name:"The industry's error", tier:2, deps:["P2","D2","D3"], see:[],
+ stub:"All three responses elevate (step four) a constraint they never identified (step one) — and elevate non-constraints at that.",
+ para:"Put the focusing steps beside the three families and the error is exact. Training, automation, and audit are all step four — elevation, adding capacity. None has performed step one — identifying the constraint. The industry is elevating, with enormous capital and energy, a bottleneck it never paused to locate, and most of what it is elevating was never the bottleneck. It is the textbook Goldratt mistake performed at the scale of a global market: jump to adding capacity, skip the discipline of finding out where the system actually binds.",
+ deep:"The error compounds. Not only is the industry elevating before identifying; it is elevating non-constraints, which yields the mirage of progress with none of the throughput. And the reskilling family makes the policy-as-physical mistake specifically: it reads the constraint as a skills shortage — physical, buyable — when the binding limit is a policy. Every dollar spent training, automating, or auditing faster is a dollar spent refusing to ask the one question the whole method is built around. The rest of this map is that question, answered."},
+
+I1:{name:"Attention is fixed", tier:3, deps:["D1"], see:[],
+ stub:"Human deliberate cognition does not scale, parallelise, or transfer; it was fully spent before AI arrived.",
+ para:"If the constraint is not capability, what is scarce? On the human side of the table: attention — the deliberate, effortful, serial cognition a person brings to bear and holds. It does not scale: you cannot run a person's considered attention on more cores. It does not transfer: one person's hard-won judgement cannot be downloaded into the next. And it was already fully committed before any of this began. Model capability is the abundant input, arriving from outside and growing every quarter. Human attention is the fixed one. The AI era does not add to it. It draws against it.",
+ deep:"This is the System 2 of Kahneman's framing — slow, effortful, conscious cognition — as opposed to fast, automatic System 1. The crucial property here is that System 2 is the non-scaling resource. More compute, bigger models, faster inference all expand the supply of machine output; none expands the supply of human deliberate attention. So any architecture that routes more demand onto that attention is loading the one resource that cannot grow. The question becomes: what determines how much human attention each unit of machine output consumes?"},
+I2:{name:"Trust is the multiplier", tier:3, deps:["I1"], see:[],
+ stub:"A trusted output costs almost no attention; an untrusted one costs full verification. The 10× is low trust × rising volume.",
+ para:"Here is the hinge of the diagnosis. Every output a machine produces demands a share of human attention — to check it, to decide whether to rely on it — and the size of that share is set by one thing: whether the human has reason to trust the output without checking. A trusted output costs almost nothing; you act on it. An untrusted one costs the full price of verification, every time. Trust is the multiplier on attention. The order-of-magnitude panic is exactly this: ten times the output, almost none of it trustable, each unit drawing full price against a resource that cannot grow.",
+ deep:"This reframes the whole crisis. Raise the trust and the same volume becomes manageable, because attention is spent only where it must be. Leave the trust at zero and no amount of human capacity will ever suffice, because the more capable and faster the machine becomes, the more untrusted output it generates and the deeper underwater the human goes. The amount to learn was never the real variable. The real variable is the price per unit of output, and trust sets that price. Everything downstream is about how to lower it."},
+I3:{name:"Verify vs decide", tier:3, deps:["I2"], see:["F1"],
+ stub:"Trust relieves the checking, never the deciding; the judgement of ends is the irreducible human act.",
+ para:"The claim about trust is narrow on purpose. Trust relieves the verification load — the checking, the second-guessing, the reading-everything-twice that untrusted output forces. It does not relieve, and should not, the part of attention that decides what ought to be done in the first place. That judgement of ends is the irreducible human act, worth protecting precisely so it is not drowned under the verification of means. The point of making the machine trustable is to spend the scarce attention on deciding rather than checking. Trust does not replace judgement. It clears the ground so judgement has somewhere to stand.",
+ deep:"This distinction guards against a real objection: that the argument promises to automate judgement itself. It does not. Verification — did the machine do this correctly — is mechanisable through structure; decision — is this the right thing to want — is not, and the architecture deliberately leaves it human. The failure mode to avoid is a system so smooth that the human rubber-stamps, verification collapsing into theatre and the deciding never happening. A healthy system keeps deciding effortful and rare while making verification nearly free. The ratio between them is itself a diagnostic."},
+I4:{name:"The verify-everything policy", tier:3, hinge:true, deps:["I2","D3"], see:[],
+ stub:"The binding constraint is the rational rule “don't rely on machine output you didn't check” — a policy disguised as a skills shortage.",
+ para:"Now diagnosis meets identification. The binding constraint in working with AI is not a shortage of capability or of skilled people. It is a policy: the standing, entirely rational rule that you do not rely on machine output you have not personally verified. That rule is the bottleneck. It presents itself to the organisation as a skills shortage — we don't have enough people who can work with this — a physical-looking problem with a physical-looking remedy, the very thing the reskilling industry sells. But the shortage is downstream of the policy.",
+ deep:"This is where the two halves of the argument lock together. The constraint is a policy, and the policy is the verify-everything rule that trust-as-multiplier explains. Relieve the policy and the skills shortage largely evaporates, because the reason every output needs a skilled human is that nothing makes it trustable without one. A policy constraint is not elevated by adding resource — that is the whole meaning of the category. It is dissolved by changing the structure that made the policy necessary. Which structure? The next tier answers: legibility and accountability."},
+I5:{name:"Untrusted output is inventory", tier:3, deps:["I2","D2"], see:[],
+ stub:"Every untrusted output is work-in-process queued at the verification bottleneck; a faster agent produces inventory faster.",
+ para:"There is a subtler error, and it is pure Goldratt. Subordination — the third focusing step — says you pace the whole system to the constraint and never let non-constraints run flat out, because work released faster than the bottleneck can absorb does not become output. It becomes inventory, piling up in front of the constraint. Now consider an agent producing, faster and in greater volume, output no human has reason to trust. Each output is a unit of work-in-process queued in front of the verification bottleneck. A faster agent is not producing more finished work. It is producing inventory faster.",
+ deep:"In a factory, accelerating a work centre upstream of the bottleneck is recognised on sight as mismanagement — it grows the pile, lengthens queues, ties up capital, and hides problems in the heap. In AI it is called a productivity revolution. The whole automation wave, read through the focusing steps, is a campaign to speed the work centres upstream of the constraint while doing nothing about the constraint itself. Throughput accounting's lesson applies directly: inventory is a liability, not an asset, and output that cannot yet be relied upon is inventory no matter how fast it was produced."},
+
+T1:{name:"Trust = legibility + accountability", tier:4, hinge:true, deps:["I2"], see:[],
+ stub:"The two structural pillars of reliance-without-watching — the definition that turns a soft word into an engineerable one.",
+ para:"To relieve the policy you must make machine output trustable as produced, and trust has to be made precise or it stays a slogan. The structural kind of trust — the kind that lets a person rely on work they did not watch being done — rests on two things and only two. The first is legibility: you can see what the system did and why. The second is accountability: the system can be held to answer for what it did. One is whether you can read it. The other is whether it can answer for itself. A system with both can be relied upon without supervision; missing either, it falls back onto the human to verify by hand.",
+ deep:"This is the pivot of the whole argument — the page the second half hangs on. Note what kind of trust it is: not the warm interpersonal sort built over years, but the structural sort that can be engineered into how work is kept. That distinction is what makes the problem solvable. You cannot manufacture a relationship, but you can manufacture legibility and accountability. And historically someone did: double-entry bookkeeping is the canonical instance of structural trust, which is why the prior-art tier traces it. Trust, defined this way, is not a feeling the human must summon. It is a property the work either has or lacks."},
+T2:{name:"Legibility", tier:4, deps:["T1"], see:[],
+ stub:"You can see what the system did and why; the work is readable rather than opaque.",
+ para:"Legibility is the first pillar: the work can be read — not just the output but the reasoning, the dependencies, the grounds, visible and inspectable in a form a human or another system can follow. An opaque process, however correct, cannot be trusted without checking, because there is nothing to check against except the output itself. A legible one offers its workings for inspection, so reliance becomes a matter of reading rather than re-deriving. Legibility is what lets you answer “what did this do, and on what basis?” without redoing the work.",
+ deep:"James C. Scott's Seeing Like a State gives the word its shadow: legibility imposed from above flattens what it cannot read, and the state's drive to make populations legible was historically violent precisely because its instruments could only read the simplified. The difference now is the reader. A system that handles qualitative multiplicity can make work legible without flattening it — legibility without reduction. That is the hope, and the discipline required to keep it honest: legibility must mean readable-as-it-is, not readable-once-simplified-into-what-the-reader-can-handle."},
+T3:{name:"Accountability", tier:4, deps:["T1"], see:[],
+ stub:"It can be held to answer — a traceable record, attribution, a path from any claim back to its grounds.",
+ para:"Accountability is the second pillar: the system can be held to answer for what it did. There is a record, durable and traceable; every claim can be followed back to its grounds; every action has an author. Legibility lets you read what happened; accountability binds the system to it — makes it answerable, attributable, auditable after the fact and not only in the moment. A system can be legible and unaccountable, or accountable and illegible — an immutable log no one can interpret. Trust at the level that makes attention manageable needs both.",
+ deep:"Accountability is the testimonial sense of account — the steward who must give an account of their stewardship. Structurally it requires an immutable, attributable record: who did what, when, on what evidence, in an order that cannot be quietly rewritten. This is why append-only journals matter, and why segregation of duties matters — accountability fails the moment the record can be edited by the party held to it, or the doer can also approve. Accountability is not a sentiment of responsibility. It is a structure that makes evasion fail."},
+T4:{name:"Two senses of account", tier:4, deps:["T2","T3"], see:["A5"],
+ stub:"Counting (legibility) and giving-an-account (accountability); the pun was the thesis all along.",
+ para:"The word account carries both pillars at once, and has since before Pacioli. To account is to count — to tally, to make legible, to show the numbers. And to give an account is to narrate, to answer for, to be accountable. The two senses are the same word because they were once the same act: the steward standing before the master with the books and the story. Legibility is the counting sense; accountability the giving-an-account sense. A system that does both is doing what accounting always meant — not bookkeeping in the narrow sense, but rendering a trustworthy account of what was done with what was entrusted.",
+ deep:"The double meaning is not a coincidence of English; it runs through the vocabulary of stewardship across traditions, and it is why accounting is the right name for the whole approach rather than a metaphor borrowed from finance. The parable of the talents is an audit scene; the reckoning is a giving-of-accounts. When the system asks an LLM to keep books that are legible and accountable, it asks for an account in both senses at once — and the trust the books earn is exactly the trust a faithful steward's reckoning earns: not faith in the steward's character, but confidence in the account."},
+T5:{name:"Warrant, not trust", tier:4, deps:["T1"], see:["A6"],
+ stub:"What you actually want is not to trust the machine but to not have to — reliance made rational without faith in any participant.",
+ para:"A subtle correction to everything so far: the goal is not to trust the machine. It is to not have to. Double-entry never asked the merchant to trust the clerk; it made the clerk's honesty irrelevant within bounds, because the books could not lie quietly regardless of who kept them. What you are really after is warrant — verification made so cheap, and evasion made so structurally hard, that reliance becomes rational without confidence in any participant. Trust vested in an agent is faith, and faith does not scale and shatters on betrayal. Warrant is a property of the arrangement, not the actor.",
+ deep:"This dissolves an apparent circularity: the LLM is both the thing relied upon and a component of the machinery that produces the reliance — it keeps the books, reads the evidence, drafts the postings. That would be vicious if trust were vested in the LLM. It is not — it is vested in the structure: derived balances no one writes, segregation so no instance approves its own work, a deterministic checker no model touches. This is von Neumann's old result — reliable systems from unreliable components — applied to the human-AI boundary. The books stay sound as the models change, get stranger, or occasionally lie, because warrant never depended on the clerk's character."},
+
+A1:{name:"Trust at a distance", tier:5, deps:["T5","T3"], see:[],
+ stub:"Double-entry's historical function: letting principals rely on agents they never watched — the precondition for the firm.",
+ para:"The structural trust we are after is not hypothetical. It was built once, and it changed the world. Double-entry bookkeeping's deepest function was never arithmetic; it was trust at a distance — letting an absent principal rely on an agent he never watched, because the agent's books were structurally incapable of lying quietly. A merchant in Venice could trust a factor in Alexandria not by faith but by audit, because the representation balanced or it did not. This is the same problem we now face across a new boundary: humans extending reliance to AI agents over work they cannot directly observe.",
+ deep:"The historical claim is Sombart's and Weber's: double-entry was a precondition for capitalism, the firm, and credit, because it solved the principal-agent problem of trust across distance. Without it, enterprise could not outrun the reach of a single watchful eye. The intent ledger is to the human-AI boundary what double-entry was to the merchant's: the structure that makes delegation safe enough to scale. Everything in the system tier is an attempt to rebuild, for machine work, the properties that made the merchant's books trustworthy."},
+A2:{name:"Journal and ledger", tier:5, deps:["A1"], see:[],
+ stub:"An append-only record of events (the truth) versus derived current state (the read surface).",
+ para:"Double-entry keeps two things, and the distinction is everything. The journal is the chronological, append-only record of what happened — every transaction, in order, never altered. The ledger is the arrangement by account from which current state is read. The discipline is that the journal is the truth and the ledger is derived from it: any figure in the ledger can be traced back to the journal entries that produced it. You do not edit the ledger directly; you post to the journal, and the ledger follows. The record of events is primary; the current state is a view.",
+ deep:"This is event-sourcing, five centuries early. The journal is the event log; the ledger is the materialised projection; recovery is replay. Smalltalk's image-and-changes-file is the same architecture, as is every modern append-only system from bank cores to Kafka to git. The reason it produces trust is that an append-only journal cannot be quietly revised — history is fixed, and any present state that disagrees with the replayed history is detectable corruption. Separating the immutable record from the derived view is the structural root of both accountability and legibility."},
+A3:{name:"Nobody writes a balance", tier:5, deps:["A2"], see:[],
+ stub:"You post events; balances are derived; writing a balance directly is the cardinal sin.",
+ para:"The single most important rule in double-entry: you never write a balance. A bookkeeper who typed a number directly into the cash account would be committing fraud or error — cash is whatever the postings sum to, derived and never asserted. State is a consequence of events, not an independent fact someone can set. This is why the books resist manipulation: there is no place to put a lie, because every figure must be the sum of entries that each trace to evidence. The balance is read off the journal; it is never authored.",
+ deep:"Translate this to machine work and a whole class of bugs dissolves. If done or approved or trusted is a writable field, someone — or some agent being helpful — can set it directly, and the status becomes a claim rather than a consequence. Make status a derived balance instead, computed from postings — a thing was produced, a thing was verified by a distinct party — and the authority question evaporates: no one writes the balance, so no one can forge it. The write surface of the whole system shrinks to one act, append a posting, and correctness becomes checkable by recomputation."},
+A4:{name:"Accretion", tier:5, deps:["A2"], see:[],
+ stub:"Nothing is erased; correction is by reversing entry; the books only grow.",
+ para:"The books only grow. A mistake is not erased; it is corrected by a reversing entry that leaves both the error and the correction in the record. Nothing is deleted, ever. This is what makes the history trustworthy: you can always see what was thought, when, and how it was revised. Accretion seems wasteful until you realise that the deleted past is exactly where manipulation hides. A record that can be rewritten can be made to say anything; a record that only accretes carries its own corrections in plain sight, and forces deception to be an ongoing performance rather than a one-time edit.",
+ deep:"Accretion moves the cost of honesty and the cost of fraud in opposite directions. Honest revision is cheap — post the correction, the trail tells the true story. Fraud becomes expensive — you cannot retroactively fabricate a coherent history of postings, verifications, and corrections; you would have to live the forgery forward, forever. The append-only discipline makes honesty the low-energy state. The apparent tension — that accretion means the books grow without bound — is resolved by the period close: consolidation that summarises without erasing, so the working view stays legible while the journal stays complete."},
+A5:{name:"The trial balance", tier:5, hinge:true, deps:["A3","A4"], see:["T2","T3"],
+ stub:"Where legibility and accountability become mechanical: the books are structurally unable to lie quietly.",
+ para:"This is where the two abstract pillars become a mechanism. The trial balance is the check that the books are internally consistent — that debits equal credits, that everything that should reconcile does. Its genius is not the arithmetic; it is that corruption announces itself. A book that has been tampered with fails to balance; the lie cannot stay quiet, because the structure forces every entry to have its counterpart and every figure to be the sum of its grounds. Legibility and accountability stop being aspirations and become a property you can mechanically verify: the books are sound, or they visibly are not.",
+ deep:"This is the “oh, that's what they mean” insight. For five centuries, trust in books rested not on trusting the bookkeeper but on a structure where dishonesty produces detectable inconsistency. The merchant did not read every entry; he relied on the fact that a falsified ledger would fail to reconcile. The intent ledger's equivalent is its conformance check: a deterministic verification that the journal is internally closed — every settlement tracing to a fulfilment and a verification, every claim to a voucher. The trial balance is why “unable to lie quietly” is a structural fact rather than a hope."},
+A6:{name:"Segregation of duties", tier:5, deps:["A1","T3"], see:[],
+ stub:"Initiator is not approver; the three-way match; trust from structure rather than character.",
+ para:"Accounting never lets one party both do a thing and bless it. The person who initiates a payment is not the person who approves it; the three-way match requires that the order, the receipt, and the terms — three independently produced records — agree before money moves. This is segregation of duties, and its purpose is to make trust a property of structure rather than of any individual's honesty. No single actor can both act and certify their own action, so fraud requires collusion, which is harder and more detectable than a lone forgery. Trust is engineered by separating the roles that must not coincide.",
+ deep:"The three-way match generalises precisely: a commitment (what was promised), a delivery (what arrived), and the terms (what counts as conforming) must agree before the account settles. In the intent ledger this becomes the rule that the author of a fulfilment cannot be the author of its verification — the doer cannot bless their own work. It is why an LLM that drafts a verification on a human's behalf must not become the verifier: that would collapse the separation through the side door of helpfulness. Segregation is how books stay trustworthy when no participant is assumed trustworthy."},
+
+S1:{name:"Intents as unit of account", tier:6, deps:["A1"], see:["P1"],
+ stub:"Money is one expression of intent among many, not the measure; the financial statements become a derived projection.",
+ para:"The intent ledger keeps its books in intents rather than money. Money is treated as one expression of intent among many — and not the most important — rather than the universal measure to which everything is reduced. The financial statements still exist, but as a derived projection: a view filtered to the monetarily-expressed commitments, rendered for counterparties who require that compression. The primary record is what the organisation is committed to and whether those commitments are met. This inverts ordinary accounting, where money is the substrate and everything else anecdote, and restores what the ledger was before money became its measure: a record of obligations.",
+ deep:"Anthropologically, the obligation ledger predates coinage by millennia — the Mesopotamian temple records, the tally sticks, debts denominated in kind. Money-of-account arrived as a compression forced by the limits of the human bookkeeper, who could balance numbers but not heterogeneous obligations. An LLM can judge whether a commitment is met without reducing it to a number, which means the monetary compression is no longer necessary for tractability. This is commensuration without reduction — the thing prices did, done directly on the qualitative. Money becomes a projection of the intent ledger rather than its foundation."},
+S2:{name:"The chart", tier:6, deps:["A2"], see:[],
+ stub:"A small, governed vocabulary — a few account kinds and posting kinds — extended only by recorded amendment.",
+ para:"A chart of accounts is deliberately, almost painfully small. Classical bookkeeping runs the entire economic life of an enterprise through a handful of fundamental categories, and adding one is a governance event, not a convenience. The intent ledger keeps the same discipline: a few account kinds — commitment, gap, relation — and a few posting kinds, with new types admitted only by a recorded amendment carrying its rationale, never by quiet extension. Expressive vocabulary is the enemy of legibility — the power of the ledger comes from forcing all activity through a few categories any reader can interpret.",
+ deep:"This is the loosening discipline aimed at the system's own ontology. A sprawling type system means every reader must learn a private language before the books are legible; a small governed chart means a new participant, human or model, learns a few categories and can read anything. The amendment-with-rationale rule treats the vocabulary as constitutional: extensions are possible but must be argued and recorded, so the chart accretes deliberately rather than sprawling. The discipline applies to the system's vocabulary, not to the domain accounts an instance opens — those can be as numerous as the business requires."},
+S3:{name:"Settlement", tier:6, deps:["A3","A6","S2"], see:[],
+ stub:"An account clears when a fulfilment and a verification by a distinct author meet; the only place “done” is decided.",
+ para:"An account does not become done because someone says so. It settles when two postings meet: a fulfilment (a thing was produced that attempts to satisfy the account's terms) and a verification (a distinct party confirms it does). The status is then derived — the account reads as settled because the postings clear, not because a field was set. This is the only place in the system where done is decided, and it is gated by the segregation rule: the author of the fulfilment cannot be the author of the verification. Settlement is the structural location of trust — the moment work becomes relied-upon record.",
+ deep:"Settlement is where several disciplines converge: derived balances (the status is read, not written), segregation of duties (distinct authors), and vouchers (the fulfilment cites evidence). It is also where the human's irreducible act lives in practice — verification is often the human's distinctive contribution, the act that turns machine work into trusted record. Making verification cheap and unmissable — one click from the thing being judged — is therefore the highest-leverage interface decision in the whole system, because it is the constraint's exploitation point: the scarce human attention, spent exactly where it must be and nowhere else."},
+S4:{name:"The verifier", tier:6, hinge:true, deps:["A5","S3"], see:["T5"],
+ stub:"One small deterministic checker of form, not quality — readable in a sitting — the one thing that is not a projection.",
+ para:"Everything in the system is a projection of the books except one artifact: the verifier. It is a small, deterministic program that checks the journal for form — that every posting is well-formed, every reference resolves, every settlement has its fulfilment and distinct-author verification, every claim its voucher, the books internally closed. It does not and cannot judge quality — whether the work was good. That judgement stays with humans and models. The verifier is deliberately small enough to be read and understood in a single sitting, because it is the one thing that must be trusted absolutely, and you can only absolutely trust what you can fully comprehend.",
+ deep:"This is the de Bruijn criterion from proof assistants: the proof-search engine can be vast, creative, and untrusted, because every proof must pass a tiny kernel checker a single person can verify by hand. Trust concentrates in the small thing, and that concentration frees everything else to be arbitrarily clever and arbitrarily unreliable. The verifier is the system's kernel checker. Because it judges form not quality, it can be tiny, deterministic, and stable across model generations while everything that judges quality evolves freely. It is the fixed point that purchases all the freedom: the product's identity is model-independent precisely because this one component is not a projection of any model's judgement."},
+S5:{name:"Vouchers / grounding", tier:6, deps:["T3","S3"], see:[],
+ stub:"No claim without evidence; the inscription that ties every posting back to the artifact it rests on.",
+ para:"No posting stands on its own word. A fulfilment must cite a voucher — a reference to the actual artifact it rests on, the invoice, the document, the produced file — and the evidence must point to a specific feature, not a vague assertion. This is the grounding rule: no inferred claim without artifact evidence. Documents themselves live outside the books, referenced by resolvable pointer rather than contained, the way a ledger entry cites a receipt in the file rather than copying it. The voucher is the path from any claim back to its grounds — the thing that makes accountability checkable rather than asserted.",
+ deep:"Bookkeeping never confuses the entry with the evidence: the posting is in the books, the receipt is in the cabinet, and the voucher number connects them. The grounding rule is this discipline applied to interpretation — especially important when an LLM is inscribing, because models can produce fluent claims unmoored from anything. Requiring every claim to cite a resolvable, specific piece of evidence is what keeps the books honest at the point of capture. The verification side must then be able to resolve those pointers, which is why a verifier distinct from the proposer matters: hallucinated evidence is caught by someone checking the citation, not the citer."},
+S6:{name:"Thinking vs deciding", tier:6, deps:["S3","S2"], see:[],
+ stub:"Opening an account (anyone, free) is separated from verifying it (gated, authored); the books distinguish a thought from a decision.",
+ para:"The system separates thinking from deciding, structurally. Opening an account — inscribing a commitment, a question, a candidate reading — is free and open: anyone can do it, it costs nothing, it commits nothing. Settling one — verifying that it holds — is gated and authored, the scarce and accountable act. Because these are different postings governed by different rules, the books can hold a thought without treating it as a decision. A red account is a fully legitimate inscription of something not yet done and maybe never done; a verified one is a decision made and warranted. The gap between them is where deliberation lives.",
+ deep:"This dissolves an old failure mode of both minds and organisations: mistaking a vivid thought for a settled conclusion, letting the articulate idea become policy by being spoken. Brainstorming rules, devil's advocacy, cooling-off periods are all cultural attempts to re-separate thinking from deciding; the ledger makes the separation structural, so it does not decay when the facilitator leaves. It also means the system is good to think with: a thought can be inscribed and parked without being built. The health of the system is partly a ratio — too many verifications per thought is deciding without thinking; too few is thinking that never decides."},
+
+F1:{name:"The forensic opening", tier:7, deps:["S5","I3"], see:["F3"],
+ stub:"Books derived from a folder of documents; recognition over recall; the inarticulate owner.",
+ para:"How does a business that has never kept such books begin? Forensically. The owner drops a folder of what they already have — invoices, emails, photos, reports — and the system reads it, opening the accounts the documents imply, each grounded in the artifacts it was read from. No articulation is required, because most owners cannot state their intents but can instantly recognise a wrong one. The owner's role is reaction, not recall: confirm, deny, correct by fragment. The shoebox of receipts is already a journal; what was missing was the labour of turning it into a ledger, and that labour is exactly what an LLM makes free.",
+ deep:"This is the product's front door, and it inverts the cognitive demand. Recall — stating what you intend — is the expensive System 2 act and the one inarticulate owners cannot perform; recognition — judging whether a shown inference is right — is cheap and nearly universal. The system reads the artifacts as evidence of dispositions rather than back-projecting stated goals. Inferred accounts are owner-confirmed by recognition; the void of what the shoebox cannot show is surfaced by what is missing; the books clarify over time as the business sheds more documents. The forensic opening is the value ladder's first rung, useful from day one."},
+F2:{name:"Counterpart, not tool", tier:7, deps:["S6","F1"], see:[],
+ stub:"Conversation as the medium; the consigliere; boards and stances.",
+ para:"The system does not occupy a functional space — a set of features that do tasks. It occupies a conversational one. Success is not tasks completed but the ability to talk with the owner about their business, grounded in books that hold the whole picture with receipts. It is the trusted advisor a small business could never afford: someone who knows everything in the shoebox, never forgets, is always available, and shows their grounds. Tasks still happen, but they arise from the conversation and return to it. The category is not tool but counterpart — the consigliere who holds the picture and tells you what the books actually show.",
+ deep:"This is the reframe that distinguishes the system from both the agent wave (tools that do tasks) and the chatbot (talk without grounding). An ungrounded model converses about business generically and weightlessly; this one gives an account of this business, every claim traceable. The advisor's stance shifts with the territory — Snowden's Cynefin domains, kept board by board: brisk where the work is clear, probing where it is complex, directive in a crisis. Those stances are themselves inscribed as readings, so the counterpart's character lives in the books and survives the swapping of the underlying model. The relationship is held by the ledger, not the weights."},
+F3:{name:"Substrate plurality", tier:7, deps:["S1","S2"], see:["F1"],
+ stub:"Intent is the first substrate, not the only one; propensity (Jullien's shì) is another; the kernel is substrate-neutral.",
+ para:"Intent is the first substrate the books keep, but not the only possible one. The kernel — append-only postings, derived balances, vouchers, the verifier — never mentions intent; it is a discipline for keeping legible, accountable, accreting books about anything that has the right shape. A business could keep books in propensities rather than intents — reading the tendencies already inherent in its configuration and acting with them, in the manner François Jullien draws from classical Chinese thought. The chart is where a culture's metaphysics enters; the kernel is neutral beneath it. The substrate is itself a choice, and the system can host more than one.",
+ deep:"Jullien's The Propensity of Things contrasts Western teleological action — form a goal, impose it on reality — with the Chinese reading of shì, the disposition already present in a situation, which efficacy relies on rather than overrides. For an inarticulate owner who cannot state goals but has deep feel for how the business flows, a propensity substrate fits better than an intent one: you read what the business is already inclined to do, visible in the artifacts, rather than back-projecting intentions. Holding propensity readings lightly, as an accreting drift-trail rather than fixed inscriptions, is the honest way to keep books about tendencies that resist being pinned."},
+F4:{name:"Federation", tier:7, deps:["S5","T5"], see:[],
+ stub:"Registries, anonymised packets, exchange boards, competing lingua francas.",
+ para:"One ledger is an island; many ledgers, sharing what they have learned, are an economy. Instances can exchange knowledge as anonymised packets — not “here is an affordance” but “in this context, this constellation supported this move under these tests” — for a receiving graph to validate locally rather than accept as truth. Across substrates, translation happens on dedicated exchange boards that record what each translation loses, and the interface vocabularies — the lingua francas — compete, selected by their recorded fitness for different kinds of exchange. For the long tail of small businesses, structurally alike, the network offers what only large firms could buy: transferred pattern knowledge, socialised.",
+ deep:"This is the most speculative tier and the most far-reaching. The packet network answers the small-business transferability problem at population scale, and the conformance standard becomes the GAAP of a many-ledger economy — what lets independently kept books recognise each other. The hazards are real and named: population analytics that catch a gamed ledger also risk punishing genuine innovation — anomaly with evidence is discovery, anomaly without is fraud — and a single mandated lingua franca would become a metaphysical monopoly, which is why francas compete and carry a reach term against fragmentation. Federation is the frontier: inscribed as a deferred possibility, built only when a second instance with a second substrate wants to talk."}
+};
+
+/* ---------- layout geometry ---------- */
+const VW = 1040, PAD = 20, CW = VW - PAD*2;
+const BAND_TOP = 18, BAND_H = 150, NODE_W = 156, NODE_H = 56;
+const pos = {}; // id -> {x,y,cx,cy}
+TIERS.forEach((tier, ti)=>{
+  const bandY = BAND_TOP + ti*BAND_H;
+  const n = tier.nodes.length;
+  const slot = CW / n;
+  tier.nodes.forEach((id, i)=>{
+    const cx = PAD + slot*(i+0.5);
+    const x = cx - NODE_W/2;
+    const y = bandY + 44;
+    pos[id] = {x, y, cx, cy:y+NODE_H/2, top:y, bottom:y+NODE_H};
+  });
+});
+const VH = BAND_TOP + TIERS.length*BAND_H + 10;
+
+/* reverse deps */
+const dependents = {};
+Object.keys(N).forEach(id=>dependents[id]=[]);
+Object.keys(N).forEach(id=>{ (N[id].deps||[]).forEach(d=>{ if(dependents[d]) dependents[d].push(id); }); });
+
+/* essay membership */
+const essayOf = {};
+Object.keys(ESSAYS).forEach(eid=>ESSAYS[eid].path.forEach(id=>{ (essayOf[id]=essayOf[id]||[]).push(eid); }));
+
+/* ---------- helpers ---------- */
+const svgNS = "http://www.w3.org/2000/svg";
+function el(tag, attrs, txt){
+  const e=document.createElementNS(svgNS,tag);
+  for(const k in attrs) e.setAttribute(k, attrs[k]);
+  if(txt!=null) e.textContent=txt;
+  return e;
+}
+function wrap(name, max){
+  const words=name.split(" "); const lines=[]; let cur="";
+  for(const w of words){
+    if((cur+" "+w).trim().length>max){ if(cur) lines.push(cur); cur=w; }
+    else cur=(cur?cur+" ":"")+w;
+  }
+  if(cur) lines.push(cur);
+  if(lines.length>2){ lines.length=2; lines[1]=lines[1].replace(/.$/,"")+"…"; }
+  return lines;
+}
+function edgePath(p, q){
+  // p = source (prereq, upper), q = dependent (lower)
+  if(Math.abs(p.cy - q.cy) < 8){
+    const yb=p.bottom; return `M ${p.cx} ${yb} C ${p.cx} ${yb+42} ${q.cx} ${yb+42} ${q.cx} ${q.bottom}`;
+  }
+  const a=p.bottom, b=q.top, dy=b-a;
+  return `M ${p.cx} ${a} C ${p.cx} ${a+dy*0.45} ${q.cx} ${b-dy*0.45} ${q.cx} ${b}`;
+}
+
+/* ---------- build map ---------- */
+const map = document.getElementById("map");
+map.setAttribute("viewBox", `0 0 ${VW} ${VH}`);
+const edgeEls = [];
+function buildMap(){
+  // bands
+  TIERS.forEach((tier,ti)=>{
+    const by = BAND_TOP + ti*BAND_H + 14;
+    map.appendChild(el("line",{x1:PAD, y1:by+6, x2:VW-PAD, y2:by+6, class:"band-rule"}));
+    map.appendChild(el("text",{x:PAD, y:by, class:"band-label"}, (ti+1)+" · "+tier.label));
+  });
+  // edges
+  Object.keys(N).forEach(id=>{
+    (N[id].deps||[]).forEach(d=>{
+      const p=pos[d], q=pos[id];
+      const path=el("path",{d:edgePath(p,q), class:"edge", "data-from":d, "data-to":id});
+      map.appendChild(path); edgeEls.push(path);
+    });
+  });
+  // nodes
+  Object.keys(N).forEach(id=>{
+    const nd=N[id], p=pos[id];
+    const g=el("g",{class:"node"+(nd.hinge?" is-hinge":"")+(nd.entry?" is-entry":""), "data-id":id,
+      tabindex:"0", role:"button", "aria-label":id+": "+nd.name});
+    g.appendChild(el("rect",{x:p.x, y:p.top, width:NODE_W, height:NODE_H, rx:3, class:"node-box"}));
+    g.appendChild(el("text",{x:p.x+10, y:p.top+15, class:"node-id"}, id));
+    const lines=wrap(nd.name, 22);
+    lines.forEach((ln,li)=>{
+      g.appendChild(el("text",{x:p.x+10, y:p.top+30+li*13, class:"node-name"}, ln));
+    });
+    g.addEventListener("click",()=>openNode(id));
+    g.addEventListener("keydown",ev=>{ if(ev.key==="Enter"||ev.key===" "){ev.preventDefault(); openNode(id);} });
+    map.appendChild(g);
+  });
+}
+buildMap();
+
+/* ---------- index list ---------- */
+const indexEl=document.getElementById("index");
+function buildIndex(){
+  let html='<h2>All accounts</h2>';
+  TIERS.forEach((tier,ti)=>{
+    html+='<div class="idx-tier"><p class="idx-tier-label">'+(ti+1)+' · '+tier.label+'</p>';
+    tier.nodes.forEach(id=>{
+      const nd=N[id];
+      html+='<button class="idx-row'+(nd.hinge?' is-hinge':'')+(nd.entry?' is-entry':'')+'" data-id="'+id+'">'+
+        '<span class="idx-id">'+id+'</span><span class="idx-name">'+nd.name+'</span></button>';
+    });
+    html+='</div>';
+  });
+  indexEl.innerHTML=html;
+  indexEl.querySelectorAll(".idx-row").forEach(b=>b.addEventListener("click",()=>openNode(b.dataset.id)));
+}
+buildIndex();
+
+/* ---------- reader ---------- */
+const reader=document.getElementById("reader");
+let activeEssay=null;
+let current=null;
+
+function tierLabel(t){ return TIERS.find(x=>x.id===t).label; }
+function nodeLinkHTML(id){ return '<button class="nodelink" data-id="'+id+'"><span class="nl-id">'+id+'</span>'+N[id].name+'</button>'; }
+
+function introHTML(){
+  return `
+  <p class="r-tier">Start here</p>
+  <h2 class="r-title">A ledger you read, not a course you finish</h2>
+  <p class="r-stub">Open any account on the map or in the index. Each opens at three depths: a glance, a read, and — if you want it — a study with the thinkers behind it.</p>
+  <div class="r-body">
+    <p>Two accounts can be entered with no prerequisites, marked in <strong style="color:var(--entry)">green</strong>: <strong>The reskilling panic</strong> (P1), if you want to start from the problem, and <strong>Constraints govern output</strong> (D1), if you want to start from the idea that cracks it.</p>
+    <p>Four accounts hold the weight of the whole argument, marked in <strong style="color:var(--accent)">red</strong>. If you read only four, read these: <strong>I4</strong>, <strong>T1</strong>, <strong>A5</strong>, <strong>S4</strong>.</p>
+    <p>Or follow one of the three paths above — each is a single route through the map. Whatever you open is posted to your journal, below.</p>
+  </div>
+  <div class="r-links">
+    <div class="r-grp"><h3>Enter cold</h3><div class="linkrow">${nodeLinkHTML("P1")}${nodeLinkHTML("D1")}</div></div>
+    <div class="r-grp"><h3>The four hinges</h3><div class="linkrow">${nodeLinkHTML("I4")}${nodeLinkHTML("T1")}${nodeLinkHTML("A5")}${nodeLinkHTML("S4")}</div></div>
+  </div>`;
+}
+
+function essayStepperHTML(id){
+  if(!activeEssay) return "";
+  const path=ESSAYS[activeEssay].path; const k=path.indexOf(id);
+  if(k<0) return "";
+  const prev = k>0 ? path[k-1] : null;
+  const next = k<path.length-1 ? path[k+1] : null;
+  return `<div class="r-stepper">
+    <button class="stepbtn" data-step="${prev||''}" ${prev?'':'disabled'}>‹ prev</button>
+    <span class="step-pos">${ESSAYS[activeEssay].name} — ${k+1} / ${path.length}</span>
+    <button class="stepbtn" data-step="${next||''}" ${next?'':'disabled'}>next ›</button>
+  </div>`;
+}
+
+function openNode(id){
+  const nd=N[id]; if(!nd) return;
+  current=id;
+  const badge = nd.hinge ? '<span class="r-badge hinge">Hinge</span>'
+              : nd.entry ? '<span class="r-badge entry">Entry point</span>' : '';
+  const deps=(nd.deps||[]).map(nodeLinkHTML).join("");
+  const leads=(dependents[id]||[]).map(nodeLinkHTML).join("");
+  const see=(nd.see||[]).map(nodeLinkHTML).join("");
+  const essays=(essayOf[id]||[]).map(e=>'<span class="nl-id" style="font-family:var(--mono);font-size:11px;color:var(--ink-faint)">'+ESSAYS[e].name+'</span>').join(" · ");
+  let html=`
+    <p class="r-tier"><span class="r-id">${id}</span> · ${tierLabel(nd.tier)}</p>
+    ${badge}
+    <h2 class="r-title">${nd.name}</h2>
+    <p class="r-stub">${nd.stub}</p>
+    <div class="r-body"><p>${nd.para}</p></div>
+    <button class="r-deeper" aria-expanded="false">Go deeper ↓</button>
+    <div class="r-deep" hidden><p class="r-deep-label">The study</p><p>${nd.deep}</p></div>
+    ${essayStepperHTML(id)}
+    <div class="r-links">
+      ${deps?`<div class="r-grp"><h3>Rests on</h3><div class="linkrow">${deps}</div></div>`:''}
+      ${leads?`<div class="r-grp"><h3>Leads to</h3><div class="linkrow">${leads}</div></div>`:''}
+      ${see?`<div class="r-grp"><h3>See also</h3><div class="linkrow">${see}</div></div>`:''}
+      ${essays?`<div class="r-grp"><h3>Appears in</h3><div>${essays}</div></div>`:''}
+    </div>`;
+  reader.innerHTML=html;
+
+  const deeper=reader.querySelector(".r-deeper");
+  const deep=reader.querySelector(".r-deep");
+  deeper.addEventListener("click",()=>{
+    const open=deep.hasAttribute("hidden");
+    if(open){ deep.removeAttribute("hidden"); deeper.textContent="Less ↑"; deeper.setAttribute("aria-expanded","true"); }
+    else { deep.setAttribute("hidden",""); deeper.textContent="Go deeper ↓"; deeper.setAttribute("aria-expanded","false"); }
+  });
+  reader.querySelectorAll(".nodelink").forEach(b=>b.addEventListener("click",()=>openNode(b.dataset.id)));
+  reader.querySelectorAll(".stepbtn").forEach(b=>b.addEventListener("click",()=>{ if(b.dataset.step) openNode(b.dataset.step); }));
+
+  highlight(id);
+  postJournal(id);
+  if(window.matchMedia("(max-width:880px)").matches){
+    reader.scrollIntoView({behavior:"smooth", block:"start"});
+  }
+}
+
+/* ---------- map highlight ---------- */
+function highlight(id){
+  const pathSet = activeEssay ? new Set(ESSAYS[activeEssay].path) : null;
+  map.querySelectorAll(".node").forEach(g=>{
+    const nid=g.dataset.id;
+    g.classList.toggle("is-current", nid===id);
+    g.classList.toggle("is-dim", pathSet ? !pathSet.has(nid) : false);
+  });
+  const lit=new Set([...(N[id].deps||[]), ...(dependents[id]||[])]);
+  edgeEls.forEach(e=>{
+    const f=e.dataset.from, t=e.dataset.to;
+    const onPath = pathSet && pathSet.has(f) && pathSet.has(t);
+    const touches = (f===id||t===id);
+    e.classList.toggle("is-lit", touches && !pathSet);
+    e.classList.toggle("is-path", !!onPath);
+    e.classList.toggle("is-dim", pathSet ? !onPath : false);
+  });
+}
+
+/* ---------- essays ---------- */
+document.getElementById("controls").addEventListener("click",ev=>{
+  const b=ev.target.closest(".chip"); if(!b) return;
+  const e=b.dataset.essay;
+  document.querySelectorAll("#controls .chip").forEach(c=>c.setAttribute("aria-pressed", c===b?"true":"false"));
+  activeEssay = (e==="none") ? null : e;
+  if(activeEssay){ openNode(ESSAYS[activeEssay].path[0]); }
+  else { if(current) highlight(current); else reader.innerHTML=introHTML(), bindIntro(); }
+});
+
+/* ---------- journal (in-memory, accretive) ---------- */
+const journal=[]; const jList=document.getElementById("journal-list"); const jCount=document.getElementById("j-count");
+function postJournal(id){
+  if(journal.length && journal[journal.length-1].id===id) return; // collapse immediate repeat
+  journal.push({id, name:N[id].name});
+  renderJournal();
+}
+function renderJournal(){
+  jCount.textContent = journal.length ? "· "+journal.length+" opened" : "";
+  if(!journal.length){ jList.innerHTML='<li class="j-empty">Nothing opened yet. Every account you read is posted here, in order.</li>'; return; }
+  const rows=journal.slice(-30).map((e,i)=>{
+    const seq=journal.length-Math.min(30,journal.length)+i+1;
+    return `<li class="j-item" data-id="${e.id}"><span class="j-seq">${String(seq).padStart(2,'0')}</span><span class="j-id">${e.id}</span><span class="j-name">${e.name}</span></li>`;
+  }).join("");
+  jList.innerHTML=rows;
+  jList.querySelectorAll(".j-item").forEach(li=>li.addEventListener("click",()=>openNode(li.dataset.id)));
+}
+
+/* ---------- init ---------- */
+function bindIntro(){ reader.querySelectorAll(".nodelink").forEach(b=>b.addEventListener("click",()=>openNode(b.dataset.id))); }
+reader.innerHTML=introHTML(); bindIntro();
+renderJournal();
+</script>
+</body>
+</html>
