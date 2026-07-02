@@ -14,7 +14,11 @@ const REQUIRED_FIELDS = [
   "vouchers", "predecessors", "content", "grammar",
 ];
 
-const POSTING_KINDS = new Set([
+// Kernel posting kinds: the floor every chart must include (verifier C-3).
+// Form validation no longer checks kind membership against a fixed set --
+// the chart is amendable (W-3), so chart membership is checked at capture
+// (journal.append) against the chart derived from the journal itself.
+const KERNEL_POSTING_KINDS = new Set([
   "open", "register", "fulfill", "verify", "reverse", "amend", "annotate",
 ]);
 
@@ -99,8 +103,8 @@ function validate(posting) {
   if (typeof posting.id !== "string" || !posting.id) {
     errors.push("id must be a non-empty string");
   }
-  if (!POSTING_KINDS.has(posting.kind)) {
-    errors.push(`kind ${JSON.stringify(posting.kind)} is not a recognized posting kind`);
+  if (typeof posting.kind !== "string" || !posting.kind) {
+    errors.push("kind must be a non-empty string");
   }
   if (typeof posting.author !== "string" || !posting.author) {
     errors.push("author must be a non-empty string");
@@ -126,4 +130,4 @@ function validate(posting) {
   return errors;
 }
 
-module.exports = { parse, serialize, validate, REQUIRED_FIELDS, POSTING_KINDS };
+module.exports = { parse, serialize, validate, REQUIRED_FIELDS, KERNEL_POSTING_KINDS };

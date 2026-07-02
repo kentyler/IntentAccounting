@@ -8,16 +8,45 @@
 const fs = require("fs");
 const path = require("path");
 const { validate, serialize, REQUIRED_FIELDS } = require("./codec");
+const { deriveChart } = require("./derive");
 
-const JOURNAL_PATH = path.join(__dirname, "..", "journal.jsonl");
+// Overridable for tests and secondary instances; defaults to the instance journal.
+const JOURNAL_PATH =
+  process.env.JOURNAL_PATH || path.join(__dirname, "..", "journal.jsonl");
 
 /**
  * Append one posting to the journal. Validates canonical well-formedness
  * first (P-4: reject only on form). Returns the posting on success.
  * Throws on validation failure.
+ *
+ * W-3: well-formedness at capture matches the verifier's C-1 and C-3 --
+ * 1. duplicate ids are rejected (C-1 counts unique ids as well-formedness;
+ *    without this check the sole write surface can put the journal into a
+ *    state the verifier rejects);
+ * 2. the posting kind is checked against the chart DERIVED FROM THE JOURNAL
+ *    (declaration plus amendments), never against a hardcoded set -- the
+ *    chart is amendable, and capture must not strangle a lawful chart
+ *    amendment (P-1). The kernel kinds are the floor, not the ceiling.
  */
 function append(posting) {
   const errors = validate(posting);
+
+  const existing = read();
+
+  if (errors.length === 0) {
+    // C-1: unique ids are canonical well-formedness
+    if (existing.some((p) => p.id === posting.id)) {
+      errors.push(`duplicate id ${JSON.stringify(posting.id)}: an earlier posting carries it`);
+    }
+    // C-3: kind must be in the chart as derived from the journal.
+    // On an empty journal only the chart declaration itself can land,
+    // and its kind ("open") is in the kernel floor.
+    const chart = deriveChart(existing);
+    if (!chart.posting_kinds.has(posting.kind)) {
+      errors.push(`kind ${JSON.stringify(posting.kind)} is not in the chart (chart is amendable: amend ["chart"] with add_posting_kinds)`);
+    }
+  }
+
   if (errors.length > 0) {
     const err = new Error("Posting rejected: " + errors.join("; "));
     err.validationErrors = errors;

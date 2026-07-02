@@ -5,7 +5,39 @@
  * from the journal alone. Must agree exactly with the verifier's derivation.
  *
  * Nobody writes a balance (P-6). Status is derived from postings.
+ *
+ * W-3 addition: deriveChart - the current chart (account kinds, posting kinds)
+ * derived from the journal alone: the chart declaration (first posting) plus
+ * chart amendments, walked in journal order exactly as the verifier walks them.
+ * The kernel kinds are the floor the chart must include, never the ceiling.
  */
+
+const KERNEL_POSTING_KINDS = [
+  "open", "register", "fulfill", "verify", "reverse", "amend", "annotate",
+];
+const KERNEL_ACCOUNT_KINDS = ["commitment", "gap", "relation"];
+
+/**
+ * Derive the current chart from an array of postings.
+ * Mirrors the verifier's walk: the chart declaration seeds the sets,
+ * amend postings on ["chart"] extend them. Returns
+ * { account_kinds: Set, posting_kinds: Set }.
+ */
+function deriveChart(postings) {
+  const account_kinds = new Set(KERNEL_ACCOUNT_KINDS);
+  const posting_kinds = new Set(KERNEL_POSTING_KINDS);
+  for (const p of postings) {
+    if (p.kind === "open" && Array.isArray(p.accounts) && p.accounts[0] === "chart") {
+      for (const k of p.content.account_kinds || []) account_kinds.add(k);
+      for (const k of p.content.posting_kinds || []) posting_kinds.add(k);
+    }
+    if (p.kind === "amend" && Array.isArray(p.accounts) && p.accounts.includes("chart")) {
+      for (const k of p.content.add_account_kinds || []) account_kinds.add(k);
+      for (const k of p.content.add_posting_kinds || []) posting_kinds.add(k);
+    }
+  }
+  return { account_kinds, posting_kinds };
+}
 
 /**
  * Derive account state from an array of postings.
@@ -81,4 +113,4 @@ function derive(postings) {
   return accounts;
 }
 
-module.exports = { derive };
+module.exports = { derive, deriveChart, KERNEL_POSTING_KINDS, KERNEL_ACCOUNT_KINDS };

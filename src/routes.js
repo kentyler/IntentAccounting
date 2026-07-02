@@ -9,6 +9,7 @@ const express = require("express");
 const journal = require("./journal");
 const { derive } = require("./derive");
 const { render } = require("./render");
+const { reconcile } = require("./reconcile");
 
 const router = express.Router();
 
@@ -52,6 +53,15 @@ router.get("/audit", (req, res) => {
   const postings = journal.read();
   const accounts = derive(postings);
   res.type("text/plain").send(render(accounts));
+});
+
+/**
+ * GET /reconcile - Reconciliation report (W-4): the trial balance beyond
+ * the audit rendering. Derived, deterministic, writes nothing.
+ */
+router.get("/reconcile", (req, res) => {
+  const postings = journal.read();
+  res.json(reconcile(postings));
 });
 
 module.exports = router;

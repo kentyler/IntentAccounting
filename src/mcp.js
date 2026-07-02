@@ -8,6 +8,7 @@
 const journal = require("./journal");
 const { derive } = require("./derive");
 const { render } = require("./render");
+const { reconcile } = require("./reconcile");
 
 /**
  * MCP tool definitions. Each tool has a name, description, inputSchema,
@@ -54,6 +55,15 @@ const tools = [
     handler() {
       const postings = journal.read();
       return derive(postings);
+    },
+  },
+  {
+    name: "read_reconcile",
+    description: "Reconciliation report (W-4): open accounts without fulfill activity, fulfills awaiting distinct-author verification, gap accounts outstanding, unreadable candidates (non-settled accounts whose terms cite reversed postings or settled accounts). Derived from the journal alone.",
+    inputSchema: { type: "object", properties: {} },
+    handler() {
+      const postings = journal.read();
+      return reconcile(postings);
     },
   },
   {
