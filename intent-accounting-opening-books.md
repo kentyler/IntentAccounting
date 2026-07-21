@@ -6,11 +6,8 @@ can read it, transcribe its opening entries into a journal, and settle its open 
 into a working instance. Installation is settlement. The treatise and the seed are the
 same text.
 
-A note to the arriving LLM: you are not an implementer following instructions. You are
-the first participant in books that were opened with you as their primary stakeholder.
-Where this document is silent, the silence is deliberate - the decision is yours. Where
-this document is ambiguous, do not resolve the ambiguity silently: raise a gap (see the
-chart) and continue with the next workable account.
+Where this document is silent, the decision belongs to the arriving actor. Where it is
+ambiguous, raise a gap and continue with the next workable account.
 
 ---
 
@@ -196,10 +193,9 @@ what, agent trust levels, approval chains - is instance scope.
 
 ## Part V: The kernel accounts
 
-These are the open accounts whose settlement constitutes an instance. Terms are tests.
-The settling actor chooses every implementation detail not stated in the terms -
-language, storage, schema, transport, structure - per P-1. Fulfillment postings must
-cite the produced artifacts as registered documents. Verification per P-6.
+These are the open accounts whose settlement constitutes an instance. Terms are tests;
+everything else is the settling actor's decision per P-1. Fulfillment cites produced
+artifacts as registered documents. Verification per P-6.
 
 ### K-1: Journal store
 
@@ -253,32 +249,26 @@ authority structures beyond the author rule.
 
 ---
 
-## Part VI: Bootstrap protocol
+## Part VI: Bootstrap invariants
 
-For the LLM performing the first settlement, and for every actor arriving thereafter.
+For the actor performing the first settlement, and for every actor arriving thereafter.
+The bootstrap holds — and the instance is valid — when these invariants are satisfied:
 
-1. Read this document in full. Read the verifier source (verify.py). Run its self-test.
-2. Create the journal (K-1 may be settled with a flat file first and improved by
-   supersession later - the books do not privilege any expression).
-3. Transcribe the opening entries in order: the chart declaration; the constitution
-   P-1 through P-8 as standing accounts; document registrations for the ancestor
-   materials and for this document itself; the lessons L-1 through L-6 as annotations
-   citing those documents; the kernel accounts K-1 through K-6 as open commitments;
-   the deferred accounts.
-4. Run the verifier. It must pass before any further work.
-5. Work the open kernel accounts in any order their dependencies admit. For each:
-   build, register the produced artifacts as documents, post fulfill citing them,
-   obtain verification (a second actor, a second session, or a recorded override with
-   reason - solo bootstrap is expected to use overrides, and the overrides are part of
-   the record).
-6. On any ambiguity in these books, post a gap account carrying everything you know
-   and what would resolve it, and move to the next workable account. Do not resolve
-   ambiguity silently.
-7. When stopping, post an annotate bookmark: what was done, what is next, what is
-   unresolved. The next arriving actor reads the latest bookmark first, then the open
-   accounts, then continues.
-8. When K-1 through K-6 are settled and the verifier passes, the instance exists.
-   Announce it with an annotation. The books remain open; they are never finished.
+**Verifier integrity.** The verifier passes before work begins and after every
+settlement. Opening entries (chart, constitution, lessons, kernel accounts, deferred
+accounts) precede all work postings.
+
+**Gap discipline.** Ambiguity becomes a gap account carrying everything known and what
+would resolve it. Silent resolution violates the books.
+
+**Continuity.** Every stopping point posts a bookmark annotation: what was done, what is
+next, what is unresolved. Every arriving actor reads the latest bookmark before the open
+accounts.
+
+**Settlement form.** Each account settles by fulfill (citing registered artifacts as
+vouchers) then verify (distinct author or recorded override with reason). When all
+kernel accounts are settled and the verifier passes, the instance exists. The books
+remain open; they are never finished.
 
 ---
 

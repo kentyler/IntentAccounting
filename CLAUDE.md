@@ -54,10 +54,8 @@ POST to `/mcp` with JSON-RPC:
 1. Read the opening books: `intent-accounting-opening-books.md`
 2. Read the latest bookmark annotation in the journal
 3. Run `python verify.py journal.jsonl --render` to see current state
-4. Check `GET /reconcile` — open accounts, pending verifications, gaps, unreadable candidates
-5. To work an account: build, register artifacts, post fulfill citing them, post verify
-6. On ambiguity: open a gap account, move to next workable account
-7. On stopping: post an annotate bookmark
+4. Check `GET /reconcile` for open accounts, pending verifications, gaps
+5. Work accounts; on ambiguity, open a gap; on stopping, post a bookmark
 
 ## Constitution
 
