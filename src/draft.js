@@ -10,7 +10,7 @@
  */
 
 const journal = require("./journal");
-const { derive } = require("./derive");
+const { derive, deriveChart } = require("./derive");
 
 function getProvider() {
   const explicit = process.env.LLM_PROVIDER;
@@ -21,7 +21,7 @@ function getProvider() {
   return null;
 }
 
-function buildSystemPrompt(accounts, postings, documents) {
+function buildSystemPrompt(accounts, postings, documents, chart) {
   const standing = Object.entries(accounts)
     .filter(([, a]) => a.state === "STANDING")
     .map(([id, a]) => `  ${id}: ${a.terms}`)
@@ -74,9 +74,9 @@ ${pendingFulfills || "  (none)"}
 Last posting id in journal: ${lastId}
 Total postings: ${postings.length}
 
-POSTING KINDS: open, register, fulfill, verify, reverse, amend, annotate
+POSTING KINDS: ${[...chart.posting_kinds].sort().join(", ")}
 
-ACCOUNT KINDS: commitment, gap, relation
+ACCOUNT KINDS: ${[...chart.account_kinds].sort().join(", ")}
 
 RULES:
 1. Draft postings as JSON objects with ALL required fields: id, kind, author, at, accounts, vouchers, predecessors, content, grammar
@@ -90,6 +90,8 @@ RULES:
 9. If the input is too ambiguous to draft the intended posting, draft a gap posting (kind: "open", account_kind: "gap") carrying everything stated, so nothing is lost.
 10. Add content.drafted_by to every posting with your model identifier.
 11. One utterance may yield multiple postings. Return each as a separate object.
+12. For grant postings: address ["authority"], set content.grantee (the identity receiving the role), content.role (one of: owner, recorder, verifier). The genesis grant sets content.genesis: true, author == grantee, role owner, no empowering predecessor. All other grants cite the empowering grant as predecessor.
+13. For revoke postings: address ["authority"], set content.grantee and content.role. Cite the grant being revoked as predecessor.
 
 RESPOND WITH ONLY a JSON array of posting objects. No explanation, no markdown fences, just the JSON array. If you need to ask a clarifying question, return a single-element array with a posting of kind "annotate" whose content.text contains your question, and content.is_clarification set to true.`;
 }
@@ -164,13 +166,14 @@ async function draft(input, context) {
 
   const postings = journal.read();
   const accounts = derive(postings);
+  const chart = deriveChart(postings);
 
   // Collect registered documents
   const documents = postings
     .filter((p) => p.kind === "register" && p.content.document)
     .map((p) => p.content.document);
 
-  const systemPrompt = buildSystemPrompt(accounts, postings, documents);
+  const systemPrompt = buildSystemPrompt(accounts, postings, documents, chart);
 
   // Build user message with timestamp and optional context
   const now = new Date().toISOString().replace(/\.\d+Z$/, "Z");

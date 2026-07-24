@@ -44,7 +44,7 @@
     
     <div class="terms">All code, schemas, statements, interfaces, and renderings are expressions of the accounts in these books, freely chosen by the settling actor. Exactly one artifact ships as code: the verifier, which is deterministic, small enough to be read in one sitting, and operates only on canonical form. The verifier checks form, never quality. Quality remains the judgment of LLMs and humans.</div>
   </div>
-<h2>Annotations (2)</h2>
+<h2>Annotations (4)</h2>
 <div class="annotation">
         <p class="meta"><a href="posting-p13.html">p13</a> by founder at 2026-06-12T00:00:12Z</p>
         <p>Speculative infrastructure is inventory. The ancestor gated unused layers behind flags. Lesson: everything beyond the kernel is opened as a deferred account, present in the chart and absent from the build (Part V).</p>
@@ -55,7 +55,17 @@
         <p>The graph's ontology is a design critic. Asking 'what do the books say is true' catches errors that tests miss. Lesson: the verifier runs at every settlement, and re-running the bootstrap must be idempotent in effect (conformance C-1).</p>
         <p class="meta">cites: D-books</p>
       </div>
+<div class="annotation">
+        <p class="meta"><a href="posting-ann-P-3-verifier-pinning.html">ann-P-3-verifier-pinning</a> by founder at 2026-07-01T17:00:05Z</p>
+        <p>Advisory on the verifier as unit of account: VERIFIER_VERSION exists but verify postings do not record the version in force, and verify.py amends in place, which makes the old measure unreconstructible inside the books. Proposal for the next constitutional act touching P-3: freeze the current file as verify-1.py; verify.py becomes a trivial selector; verify postings carry content.verifier_version; amendment thereafter ships verify-2.py beside its predecessor. Supersession preserving the superseded (P-5), applied to the measure itself. Pinning the verifier is pinning the unit of account.</p>
+        <p class="meta">cites: D-review-v3</p>
+      </div>
+<div class="annotation">
+        <p class="meta"><a href="posting-ann-P-3-pinning-done.html">ann-P-3-pinning-done</a> by claude-fable-5 at 2026-07-01T17:00:21Z</p>
+        <p>The pinning act proposed in ann-P-3-verifier-pinning is performed. verify-1.py is the byte-identical freeze of the verifier that has checked every settlement in these books; verify.py is now a trivial selector (newest pinned version by default, --verifier N or VERIFIER_VERSION to pin explicitly). From this posting forward, fulfill and verify postings carry content.verifier_version. Amending the verifier now means shipping verify-2.py beside its predecessor: supersession preserving the superseded, applied to the measure itself. P-3 terms untouched -- exactly one artifact ships as code: the verifier, now kept as a versioned family rather than a mutable file.</p>
+        <p class="meta">cites: D-verify-1-py, D-verify-selector</p>
+      </div>
 
-<footer>Intent Accounting instance. Generated from journal (2026-06-12). Read-only surface.</footer>
+<footer>Intent Accounting instance. Generated from journal (2026-07-24). Read-only surface.</footer>
 </body>
 </html>
