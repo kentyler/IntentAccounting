@@ -13,6 +13,7 @@
 const fs = require("fs");
 const path = require("path");
 const { derive } = require("./src/derive");
+const { deriveBoards } = require("./src/boards");
 
 const JOURNAL_PATH = path.join(__dirname, "journal.jsonl");
 const PUBLIC = path.join(__dirname, "public");
@@ -124,7 +125,7 @@ function buildIndex(postings, accounts) {
   // Find all documents
   const documents = postings.filter((p) => p.kind === "register");
 
-  let body = `<h1>Intent Accounting</h1>\n<p style="margin-bottom:0.75rem;"><a href="converse.html">Post to the books</a></p>\n`;
+  let body = `<h1>Intent Accounting</h1>\n<p style="margin-bottom:0.75rem;"><a href="converse.html">Post to the books</a> &middot; <a href="boards.html">Boards</a></p>\n`;
 
   if (bookmark) {
     body += `<div class="bookmark">
@@ -338,20 +339,215 @@ function buildPostingPage(p) {
   return layout(`Posting ${p.id}`, body, `<a href="index.html">Index</a> / ${p.accounts.length ? accountLink(p.accounts[0]) + " / " : ""}${esc(p.id)}`);
 }
 
+// --------------- build board account page (enriched view) ---------------
+
+function buildBoardAccountPage(boardId, accountInfo, boardData, postings, allAccounts) {
+  const related = postings.filter((p) => p.accounts.includes(boardId));
+  const board = boardData.boards[boardId];
+
+  let body = `<h1>${esc(boardId)}</h1>\n`;
+  body += `<p>${stateBadge(accountInfo.state)} <span style="font-size:0.9rem;color:#6b7280;">kind: ${esc(accountInfo.kind)}</span></p>\n`;
+
+  // Action links
+  const actions = [
+    `<a href="converse.html?account=${encodeURIComponent(boardId)}&board_id=${encodeURIComponent(boardId)}&context=${encodeURIComponent("Working in board " + boardId)}">draft in this board</a>`,
+    `<a href="converse.html?account=${encodeURIComponent(boardId)}&context=${encodeURIComponent("Annotate " + boardId)}">annotate</a>`,
+  ];
+  body += `<p style="margin:0.5rem 0;font-size:0.9rem;">${actions.join(" &middot; ")}</p>\n`;
+
+  // Terms (opening terms)
+  body += `<h2>Terms</h2>\n<div class="terms">${md(accountInfo.terms)}</div>\n`;
+
+  // Current stance + history
+  body += `<h2>Stance</h2>\n`;
+  if (board.stance.current) {
+    body += `<p>Current: <strong>${esc(board.stance.current.stance)}</strong> (${postingLink(board.stance.current.posting)})</p>\n`;
+  } else {
+    body += `<p style="color:#6b7280;">No stance set.</p>\n`;
+  }
+  if (board.stance.history.length > 1) {
+    body += `<h3>Stance history</h3>\n<table><tr><th>Position</th><th>Via</th><th>At</th></tr>\n`;
+    for (const h of board.stance.history) {
+      body += `<tr><td>${esc(h.stance)}</td><td>${postingLink(h.posting)}</td><td style="font-size:0.85rem;">${esc(h.at)}</td></tr>\n`;
+    }
+    body += `</table>\n`;
+  }
+
+  // Members
+  body += `<h2>Members (${board.memberships.current.length})</h2>\n`;
+  if (board.memberships.current.length > 0) {
+    body += `<table><tr><th>Member</th><th>Via</th></tr>\n`;
+    for (const m of board.memberships.current) {
+      body += `<tr><td>${accountLink(m.member)}</td><td>${postingLink(m.via)}</td></tr>\n`;
+    }
+    body += `</table>\n`;
+  } else {
+    body += `<p style="color:#6b7280;">No current members.</p>\n`;
+  }
+  if (board.memberships.removed.length > 0) {
+    body += `<h3>Former members</h3>\n<table><tr><th>Member</th><th>Removed via</th></tr>\n`;
+    for (const m of board.memberships.removed) {
+      body += `<tr><td>${accountLink(m.member)}</td><td>${postingLink(m.via)}</td></tr>\n`;
+    }
+    body += `</table>\n`;
+  }
+
+  // Premises
+  body += `<h2>Premises (${board.premises.current.length})</h2>\n`;
+  if (board.premises.current.length > 0) {
+    body += `<table><tr><th>Key</th><th>Value</th><th>Category</th><th>Via</th></tr>\n`;
+    for (const p of board.premises.current) {
+      body += `<tr><td>${esc(p.key)}</td><td>${esc(JSON.stringify(p.value))}</td><td>${esc(p.category || "")}</td><td>${postingLink(p.via)}</td></tr>\n`;
+    }
+    body += `</table>\n`;
+  } else {
+    body += `<p style="color:#6b7280;">No current premises.</p>\n`;
+  }
+  if (board.premises.history.length > board.premises.current.length) {
+    body += `<h3>Premise history</h3>\n<table><tr><th>Key</th><th>Action</th><th>Value</th><th>Via</th><th>At</th></tr>\n`;
+    for (const h of board.premises.history) {
+      body += `<tr><td>${esc(h.key)}</td><td>${esc(h.action)}</td><td>${esc(JSON.stringify(h.value))}</td><td>${postingLink(h.posting)}</td><td style="font-size:0.85rem;">${esc(h.at)}</td></tr>\n`;
+    }
+    body += `</table>\n`;
+  }
+
+  // Cross-board exposures
+  const inExp = board.incoming_exposures;
+  const outExp = board.outgoing_exposures;
+  if (inExp.length > 0 || outExp.length > 0) {
+    body += `<h2>Cross-board exposures</h2>\n`;
+    if (inExp.length > 0) {
+      body += `<h3>Incoming (${inExp.length})</h3>\n<table><tr><th>From</th><th>Accounts</th><th>Description</th><th>Via</th></tr>\n`;
+      for (const e of inExp) {
+        body += `<tr><td>${accountLink(e.source_board)}</td><td>${e.accounts.map(accountLink).join(", ")}</td><td>${esc(e.description || "")}</td><td>${postingLink(e.via)}</td></tr>\n`;
+      }
+      body += `</table>\n`;
+    }
+    if (outExp.length > 0) {
+      body += `<h3>Outgoing (${outExp.length})</h3>\n<table><tr><th>To</th><th>Accounts</th><th>Description</th><th>Via</th></tr>\n`;
+      for (const e of outExp) {
+        body += `<tr><td>${accountLink(e.target_board)}</td><td>${e.accounts.map(accountLink).join(", ")}</td><td>${esc(e.description || "")}</td><td>${postingLink(e.via)}</td></tr>\n`;
+      }
+      body += `</table>\n`;
+    }
+  }
+
+  // Overlaps with other boards
+  const myOverlaps = boardData.overlaps.filter((o) => o.boards.includes(boardId));
+  if (myOverlaps.length > 0) {
+    body += `<h2>Membership overlaps</h2>\n<table><tr><th>Member</th><th>Also on</th></tr>\n`;
+    for (const o of myOverlaps) {
+      const otherBoards = o.boards.filter((b) => b !== boardId);
+      body += `<tr><td>${accountLink(o.member)}</td><td>${otherBoards.map(accountLink).join(", ")}</td></tr>\n`;
+    }
+    body += `</table>\n`;
+  }
+
+  // Divergences involving this board
+  const myDivergences = boardData.divergences.filter(
+    (d) => (d.boards && d.boards.includes(boardId)) ||
+           d.source_board === boardId || d.target_board === boardId
+  );
+  if (myDivergences.length > 0) {
+    body += `<h2>Divergences (${myDivergences.length})</h2>\n`;
+    for (const d of myDivergences) {
+      body += `<div class="posting-card">
+        <p><strong>${esc(d.type)}</strong></p>
+        <pre style="font-size:0.85rem;background:#f9fafb;padding:0.5rem;border-radius:4px;overflow-x:auto;">${esc(JSON.stringify(d, null, 2))}</pre>
+      </div>\n`;
+    }
+  }
+
+  // All postings addressing this board
+  body += `<h2>All postings (${related.length})</h2>\n`;
+  for (const p of related) {
+    body += renderPostingCard(p);
+  }
+
+  return layout(boardId, body, `<a href="index.html">Index</a> / <a href="boards.html">Boards</a> / ${esc(boardId)}`);
+}
+
+// --------------- build boards index page ---------------
+
+function buildBoardsIndex(boardData, accounts) {
+  const boardIds = Object.keys(boardData.boards).sort();
+
+  let body = `<h1>Boards</h1>\n`;
+  body += `<p class="count">${boardIds.length} board${boardIds.length !== 1 ? "s" : ""}, ${boardData.overlaps.length} overlap${boardData.overlaps.length !== 1 ? "s" : ""}, ${boardData.exposures.length} exposure${boardData.exposures.length !== 1 ? "s" : ""}, ${boardData.divergences.length} divergence${boardData.divergences.length !== 1 ? "s" : ""}</p>\n`;
+
+  if (boardIds.length === 0) {
+    body += `<p style="color:#6b7280;margin-top:1rem;">No board accounts exist yet. Open an account with <code>account_kind: "board"</code> to create one.</p>\n`;
+  } else {
+    body += `<table><tr><th>Board</th><th>State</th><th>Stance</th><th>Members</th><th>Overlaps</th><th>Exposures</th><th>Divergences</th></tr>\n`;
+    for (const id of boardIds) {
+      const board = boardData.boards[id];
+      const acct = accounts[id];
+      const stanceText = board.stance.current ? board.stance.current.stance : "-";
+      const memberCount = board.memberships.current.length;
+      const overlapCount = boardData.overlaps.filter((o) => o.boards.includes(id)).length;
+      const expCount = board.incoming_exposures.length + board.outgoing_exposures.length;
+      const divCount = boardData.divergences.filter(
+        (d) => (d.boards && d.boards.includes(id)) || d.source_board === id || d.target_board === id
+      ).length;
+
+      body += `<tr>
+        <td>${accountLink(id)}</td>
+        <td>${stateBadge(acct.state)}</td>
+        <td>${esc(stanceText)}</td>
+        <td>${memberCount}</td>
+        <td>${overlapCount}</td>
+        <td>${expCount}</td>
+        <td>${divCount}</td>
+      </tr>\n`;
+    }
+    body += `</table>\n`;
+  }
+
+  if (boardData.divergences.length > 0) {
+    body += `<h2>All divergences (${boardData.divergences.length})</h2>\n`;
+    for (const d of boardData.divergences) {
+      body += `<div class="posting-card">
+        <p><strong>${esc(d.type)}</strong></p>
+        <pre style="font-size:0.85rem;background:#f9fafb;padding:0.5rem;border-radius:4px;overflow-x:auto;">${esc(JSON.stringify(d, null, 2))}</pre>
+      </div>\n`;
+    }
+  }
+
+  if (boardData.diagnostics.length > 0) {
+    body += `<h2>Board diagnostics (${boardData.diagnostics.length})</h2>\n`;
+    for (const d of boardData.diagnostics) {
+      body += `<div class="annotation">
+        <p>${esc(JSON.stringify(d))}</p>
+      </div>\n`;
+    }
+  }
+
+  return layout("Boards", body, `<a href="index.html">Index</a> / Boards`);
+}
+
 // --------------- main ---------------
 
 const postings = loadJournal();
 const accounts = derive(postings);
+const boardData = deriveBoards(postings, accounts);
 
 // Generate index
 fs.writeFileSync(path.join(PUBLIC, "index.html"), buildIndex(postings, accounts));
 
 // Generate account pages
 for (const [id, info] of Object.entries(accounts)) {
-  fs.writeFileSync(
-    path.join(PUBLIC, `account-${id}.html`),
-    buildAccountPage(id, info, postings, accounts)
-  );
+  if (info.kind === "board") {
+    // Board accounts get enriched view
+    fs.writeFileSync(
+      path.join(PUBLIC, `account-${id}.html`),
+      buildBoardAccountPage(id, info, boardData, postings, accounts)
+    );
+  } else {
+    fs.writeFileSync(
+      path.join(PUBLIC, `account-${id}.html`),
+      buildAccountPage(id, info, postings, accounts)
+    );
+  }
 }
 
 // Generate posting pages
@@ -362,5 +558,9 @@ for (const p of postings) {
   );
 }
 
-console.log(`Generated ${Object.keys(accounts).length} account pages, ${postings.length} posting pages, 1 index`);
+// Generate boards index
+fs.writeFileSync(path.join(PUBLIC, "boards.html"), buildBoardsIndex(boardData, accounts));
+
+const boardCount = Object.keys(boardData.boards).length;
+console.log(`Generated ${Object.keys(accounts).length} account pages (${boardCount} board), ${postings.length} posting pages, 1 index, 1 boards index`);
 console.log(`Site: ${PUBLIC}`);

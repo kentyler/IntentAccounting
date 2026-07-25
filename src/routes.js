@@ -10,6 +10,7 @@ const journal = require("./journal");
 const { derive } = require("./derive");
 const { render } = require("./render");
 const { reconcile } = require("./reconcile");
+const { deriveBoards } = require("./boards");
 
 const router = express.Router();
 
@@ -62,6 +63,16 @@ router.get("/audit", (req, res) => {
 router.get("/reconcile", (req, res) => {
   const postings = journal.read();
   res.json(reconcile(postings));
+});
+
+/**
+ * GET /boards - Derived board state: memberships, stances, premises,
+ * cross-board exposures, divergences. Deterministic.
+ */
+router.get("/boards", (req, res) => {
+  const postings = journal.read();
+  const accounts = derive(postings);
+  res.json(deriveBoards(postings, accounts));
 });
 
 module.exports = router;

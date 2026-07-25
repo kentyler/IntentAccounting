@@ -18,6 +18,7 @@
  */
 
 const { derive } = require("./derive");
+const { deriveBoards } = require("./boards");
 
 /** True when `terms` mentions `id` as a whole token. */
 function mentions(terms, id) {
@@ -78,12 +79,17 @@ function reconcile(postings) {
   }
   unreadableCandidates.sort((x, y) => (x.account < y.account ? -1 : x.account > y.account ? 1 : 0));
 
+  // Board diagnostics
+  const boardState = deriveBoards(postings, accounts);
+  const board_diagnostics = boardState.diagnostics;
+
   return {
     postings: postings.length,
     open_without_fulfill: openWithoutFulfill,
     fulfills_awaiting_verify: fulfillsAwaitingVerify,
     gap_accounts_open: gapAccountsOpen,
     unreadable_candidates: unreadableCandidates,
+    board_diagnostics,
   };
 }
 

@@ -11,6 +11,7 @@
 
 const journal = require("./journal");
 const { derive, deriveChart } = require("./derive");
+const { deriveBoards } = require("./boards");
 
 function getProvider() {
   const explicit = process.env.LLM_PROVIDER;
@@ -155,10 +156,76 @@ async function callOpenAI(systemPrompt, userMessage) {
 }
 
 /**
+ * Build board context addendum for the system prompt when drafting
+ * in the scope of a specific board.
+ */
+function buildBoardContext(boardId, postings, accounts) {
+  const boardState = deriveBoards(postings, accounts);
+  const board = boardState.boards[boardId];
+  if (!board) return null;
+
+  const parts = [`\nBOARD CONTEXT (drafting scoped to board: ${boardId}):\n`];
+
+  // Members
+  const members = board.memberships.current.map((m) => m.member);
+  parts.push(`Members: ${members.length > 0 ? members.join(", ") : "(none)"}`);
+
+  // Stance
+  if (board.stance.current) {
+    parts.push(`Current stance: ${board.stance.current.stance}`);
+  } else {
+    parts.push(`Current stance: (none set)`);
+  }
+
+  // Premises
+  if (board.premises.current.length > 0) {
+    parts.push(`Premises:`);
+    for (const p of board.premises.current) {
+      parts.push(`  ${p.key}: ${JSON.stringify(p.value)}${p.category ? ` [${p.category}]` : ""}`);
+    }
+  }
+
+  // Exposures
+  if (board.incoming_exposures.length > 0) {
+    parts.push(`Incoming exposures:`);
+    for (const e of board.incoming_exposures) {
+      parts.push(`  from ${e.source_board}: ${e.accounts.join(", ")}${e.description ? ` (${e.description})` : ""}`);
+    }
+  }
+  if (board.outgoing_exposures.length > 0) {
+    parts.push(`Outgoing exposures:`);
+    for (const e of board.outgoing_exposures) {
+      parts.push(`  to ${e.target_board}: ${e.accounts.join(", ")}${e.description ? ` (${e.description})` : ""}`);
+    }
+  }
+
+  // Relevant divergences
+  const relevant = boardState.divergences.filter(
+    (d) => (d.boards && d.boards.includes(boardId)) ||
+           d.source_board === boardId || d.target_board === boardId
+  );
+  if (relevant.length > 0) {
+    parts.push(`Divergences involving this board:`);
+    for (const d of relevant) {
+      parts.push(`  ${d.type}: ${JSON.stringify(d)}`);
+    }
+  }
+
+  parts.push(`
+BOARD-SCOPED DRAFTING GUIDANCE:
+- Do not treat local settlement as organization-wide settlement
+- Do not assume premises are shared with other boards unless an exposure exists
+- Preserve cross-board differences; they are informative, not errors
+- Proposed reconciliation across boards is itself a new posting, not an automatic merge`);
+
+  return parts.join("\n");
+}
+
+/**
  * Draft postings from natural language input.
  * Returns { drafts: [...postings], provider, clarification? }
  */
-async function draft(input, context) {
+async function draft(input, context, boardId) {
   const provider = getProvider();
   if (!provider) {
     throw new Error("No LLM provider configured. Set ANTHROPIC_API_KEY or OPENAI_API_KEY.");
@@ -173,7 +240,16 @@ async function draft(input, context) {
     .filter((p) => p.kind === "register" && p.content.document)
     .map((p) => p.content.document);
 
-  const systemPrompt = buildSystemPrompt(accounts, postings, documents, chart);
+  let systemPrompt = buildSystemPrompt(accounts, postings, documents, chart);
+
+  // Board context enrichment
+  if (boardId) {
+    if (!accounts[boardId] || accounts[boardId].kind !== "board") {
+      throw new Error(`Invalid board_id: "${boardId}" is not a board account.`);
+    }
+    const boardCtx = buildBoardContext(boardId, postings, accounts);
+    if (boardCtx) systemPrompt += "\n" + boardCtx;
+  }
 
   // Build user message with timestamp and optional context
   const now = new Date().toISOString().replace(/\.\d+Z$/, "Z");
@@ -227,12 +303,12 @@ function mountDraft(app) {
 
   app.post("/draft", express.json(), async (req, res) => {
     try {
-      const { input, context } = req.body;
+      const { input, context, board_id } = req.body;
       if (!input || typeof input !== "string") {
         return res.status(400).json({ ok: false, error: "input is required" });
       }
 
-      const result = await draft(input, context);
+      const result = await draft(input, context, board_id || undefined);
       res.json({ ok: true, ...result });
     } catch (err) {
       res.status(500).json({ ok: false, error: err.message });

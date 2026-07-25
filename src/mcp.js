@@ -9,6 +9,7 @@ const journal = require("./journal");
 const { derive } = require("./derive");
 const { render } = require("./render");
 const { reconcile } = require("./reconcile");
+const { deriveBoards } = require("./boards");
 
 /**
  * MCP tool definitions. Each tool has a name, description, inputSchema,
@@ -74,6 +75,16 @@ const tools = [
       const postings = journal.read();
       const accounts = derive(postings);
       return { text: render(accounts) };
+    },
+  },
+  {
+    name: "read_boards",
+    description: "Read derived board state: memberships, stances, premises, cross-board exposures, divergences, and diagnostics. Boards are accounts with kind 'board'. All state is derived from annotate postings with structured content fields.",
+    inputSchema: { type: "object", properties: {} },
+    handler() {
+      const postings = journal.read();
+      const accounts = derive(postings);
+      return deriveBoards(postings, accounts);
     },
   },
 ];

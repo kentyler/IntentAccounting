@@ -116,10 +116,18 @@ const params = new URLSearchParams(window.location.search);
 const preContext = params.get("context");
 const preInput = params.get("input");
 const preAccount = params.get("account");
+const preBoardId = params.get("board_id");
 
+if (preBoardId) {
+  const bar = document.getElementById("context-area");
+  bar.innerHTML = `<div class="context-bar" style="background:#f0fdf4;border-color:#86efac;color:#166534;">
+    <span>Board context: <strong>${escHtml(preBoardId)}</strong></span>
+    <span class="dismiss" onclick="this.parentElement.remove()">dismiss</span>
+  </div>`;
+}
 if (preContext) {
   const bar = document.getElementById("context-area");
-  bar.innerHTML = `<div class="context-bar">
+  bar.innerHTML += `<div class="context-bar">
     <span>${escHtml(preContext)}</span>
     <span class="dismiss" onclick="this.parentElement.remove()">dismiss</span>
   </div>`;
@@ -153,7 +161,7 @@ async function handleDraft() {
     const res = await fetch(`${API}/draft`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ input, context: contextStr }),
+      body: JSON.stringify({ input, context: contextStr, board_id: preBoardId || undefined }),
     });
 
     const data = await res.json();
