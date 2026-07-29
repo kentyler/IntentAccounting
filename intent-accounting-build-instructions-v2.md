@@ -26,7 +26,7 @@ you build.
 An **instance** is a set of books kept as an **append-only sequence of postings**. It
 exists to make work across the human–AI boundary trustworthy: a human cannot personally
 re-check everything an AI produces, so the books make the work **legible** (you can read
-what was done and why) and **accountable** (every claim traces to its grounds and its
+what was posted, under which intent, by whose authority, against which terms, and on what cited basis) and **accountable** (every claim traces to its grounds and its
 author). Reliance then becomes *warranted by the structure*, not by trusting the
 participant. You are not asking to be trusted; you are keeping books that make trust
 unnecessary.
@@ -36,7 +36,7 @@ all of it:
 
 - **The journal is the truth.** Current state — what is open, settled, what an account's
   terms are — is *derived* from the postings, never stored and never written. You record
-  events; status is computed.
+  postings; status is computed.
 - **Nothing is ever erased.** Correction is a new posting. Mistakes, rejections,
   superseded readings all stay, because a stronger participant tomorrow may read them
   differently.

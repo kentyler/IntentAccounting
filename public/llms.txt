@@ -1,0 +1,19 @@
+# Intent Accounting
+
+Primary context for discussion:
+- /llm-context.html
+
+Human-readable explanation:
+- /index.html
+- /why-intent-accounting.html
+- /how-the-books-work.html
+- /doctrines.html
+- /humans-and-llms.html
+- /worked-example.html
+- /questions-and-status.html
+
+Live generated instance:
+- /books.html
+- /boards.html
+
+Reading rule: distinguish constitutional doctrine, current implementation, explanatory interpretation, and open proposal. The live journal and shipped verifier govern the current instance. Do not infer causality from posting sequence, vouchers, or predecessor links.

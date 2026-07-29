@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="A readable explanation of accounts, postings, presentment, acceptance, derived state, and the append-only journal in Intent Accounting.">
+<meta name="intent-accounting-page-status" content="Explanation">
+<title>How the books work — Intent Accounting</title>
+<link rel="stylesheet" href="explanation.css">
+
+</head>
+<body>
+<header class="site-header">
+  <div class="inner">
+    <a class="brand" href="index.html">Intent Accounting</a>
+    <nav class="primary-nav" aria-label="Primary"><a href="index.html">Overview</a><a href="why-intent-accounting.html">Why</a><a href="how-the-books-work.html" aria-current="page">How it works</a><a href="doctrines.html">Doctrines</a><a href="humans-and-llms.html">Humans + LLMs</a><a href="worked-example.html">Example</a><a href="questions-and-status.html">Questions</a><a href="books.html">The books</a></nav>
+  </div>
+</header>
+<main>
+
+<header class="page-head">
+  <p class="page-status">Explanation · current semantic model</p>
+  <h1>How the books work</h1>
+  <p class="lede">An Intent Accounting instance has one append-only journal. Actors add postings. The current condition of every account is derived from those postings; nobody writes a balance directly.</p>
+</header>
+<div class="two-col">
+<article>
+<section id="account">
+<h2>1. Open an account for something that matters</h2>
+<p>An account is not a folder. It is a named thing whose condition the books are expected to answer.</p>
+<dl>
+<dt>Commitment</dt><dd>Something owed, expressed as terms that describe what would discharge it.</dd>
+<dt>Gap</dt><dd>A payable for understanding: a question, ambiguity, or missing knowledge stated with what would resolve it.</dd>
+<dt>Relation</dt><dd>An unresolved relationship between named things, kept open until its terms are resolved.</dd>
+<dt>Board</dt><dd>A named region of the books in which a particular conversation, stance, membership, and set of premises can be maintained.</dd>
+</dl>
+</section>
+<section id="posting">
+<h2>2. Add postings; never rewrite history</h2>
+<p>Every act enters as a posting with an identity, author, time, accounts addressed, citations, predecessors, content, and grammar. The journal is append-only. A mistaken entry is corrected by another entry, not by erasing the first one.</p>
+<table><thead><tr><th>Posting</th><th>What it does</th></tr></thead><tbody>
+<tr><td><code>open</code></td><td>Creates an account and states its initial terms.</td></tr>
+<tr><td><code>register</code></td><td>Makes an external document citable without putting the document inside the ledger.</td></tr>
+<tr><td><code>present</code> / <code>fulfill</code></td><td>Presents evidence or candidate performance against an account.</td></tr>
+<tr><td><code>accept</code> / <code>verify</code></td><td>Accepts or rejects a presentment. The legacy and presentment vocabularies remain valid side by side.</td></tr>
+<tr><td><code>dishonor</code></td><td>Records refusal of a presentment and its stated ground.</td></tr>
+<tr><td><code>protest</code></td><td>Escalates a dishonor to a board.</td></tr>
+<tr><td><code>reverse</code></td><td>Neutralizes the effect of a prior posting while preserving it.</td></tr>
+<tr><td><code>amend</code></td><td>Changes terms or constitutional machinery with a rationale and a visible predecessor.</td></tr>
+<tr><td><code>annotate</code></td><td>Adds a reading, lesson, bookmark, or commentary without changing a balance.</td></tr>
+<tr><td><code>grant</code> / <code>revoke</code></td><td>Record operational authority. Their effect belongs to authority derivation, not to capture.</td></tr>
+</tbody></table>
+</section>
+<section id="derive">
+<h2>3. Derive the account’s condition</h2>
+<p>The journal stores events, not writable status. From the live, unreversed postings, the read side derives whether an account is:</p>
+<ul><li><strong>STANDING</strong> — constitutional or otherwise permanently open by nature;</li><li><strong>OPEN</strong> — not yet discharged, with a readable presentment condition;</li><li><strong>DISCHARGED</strong> — a presentment has received an effective accepted response under the settlement rule.</li></ul>
+<p>An open account can additionally be read as never presented, presented and awaiting response, dishonored without protest, or dishonored and protested.</p>
+<div class="definition"><strong>Nobody writes “DISCHARGED.”</strong> The state is the result of reading the journal, not a field that any actor is allowed to set.</div>
+</section>
+<section id="form-quality">
+<h2>4. Keep form separate from quality</h2>
+<p>The shipped verifier checks whether the journal conforms to its constitutional form: references point backward, kinds are in the chart, required evidence is cited, and settlement grammar is valid. It does not decide whether the work is good.</p>
+<p>Humans and LLMs remain responsible for judgments of quality. The ledger makes those judgments attributable and revisable rather than pretending to automate them away.</p>
+</section>
+<section id="capture-read">
+<h2>5. Let capture be permissive and reading disciplined</h2>
+<p>Intent Accounting deliberately resists forcing every judgment into the write boundary. Late, partial, disputed, or awkward postings are valuable evidence. Many failures that would ordinarily be rejected at input are instead recorded and surfaced by derivation as inert, nonconforming, unresolved, or contested.</p>
+</section>
+</article>
+<aside class="toc"><strong>On this page</strong><a href="#account">Accounts</a><a href="#posting">Postings</a><a href="#derive">Derived condition</a><a href="#form-quality">Form and quality</a><a href="#capture-read">Capture and reading</a></aside>
+</div>
+<nav class="page-links"><a href="why-intent-accounting.html">← Why</a><a href="doctrines.html">The doctrines →</a></nav>
+
+</main>
+<footer>
+  <div class="inner">
+    <span>Intent Accounting explanation</span>
+    <span><a href="llm-context.html">Single-page context for an LLM</a> · <a href="books.html">Read the live books</a></span>
+  </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="A worked example showing how an Intent Accounting commitment moves from opening to presentment, acceptance, dishonor, protest, reversal, and discharge.">
+<meta name="intent-accounting-page-status" content="Explanation">
+<title>Worked example — Intent Accounting</title>
+<link rel="stylesheet" href="explanation.css">
+
+</head>
+<body>
+<header class="site-header">
+  <div class="inner">
+    <a class="brand" href="index.html">Intent Accounting</a>
+    <nav class="primary-nav" aria-label="Primary"><a href="index.html">Overview</a><a href="why-intent-accounting.html">Why</a><a href="how-the-books-work.html">How it works</a><a href="doctrines.html">Doctrines</a><a href="humans-and-llms.html">Humans + LLMs</a><a href="worked-example.html" aria-current="page">Example</a><a href="questions-and-status.html">Questions</a><a href="books.html">The books</a></nav>
+  </div>
+</header>
+<main>
+
+<header class="page-head">
+  <p class="page-status">Explanation · illustrative example</p>
+  <h1>One commitment through the books</h1>
+  <p class="lede">A small example shows the difference between doing work, presenting it, and making the acceptance of it answerable.</p>
+</header>
+<div class="two-col">
+<article>
+<section id="scenario"><h2>The scenario</h2><p>A team wants a migration script that moves customer records to a new database without losing identifiers. An LLM is asked to produce the script. Another actor will decide whether to accept responsibility for relying on it.</p></section>
+<section id="entries"><h2>The entries</h2><ol class="flow"><li><strong>Open the commitment.</strong><br><code>MIG-17</code> is opened with terms: preserve every customer identifier, provide a dry-run report, and pass the registered migration test suite.</li><li><strong>Register the evidence source.</strong><br>The test suite and schema specification are registered as citable documents. The documents remain outside the journal; the journal records their resolvable locations.</li><li><strong>Present the work.</strong><br>The producing LLM posts <code>present-MIG-17-v1</code>, cites the script, dry-run report, and test output, and addresses <code>MIG-17</code>.</li><li><strong>Respond to the presentment.</strong><br>An authorized acceptor may accept it, reject it, or dishonor it with a ground. Merely uploading the script does not discharge the commitment.</li><li><strong>Derive the condition.</strong><br>Before response, the account is OPEN and <code>presented_awaiting</code>. After an effective accepted response, it is DISCHARGED. Nobody writes that state directly.</li></ol></section>
+<section id="accept"><h2>Path A: acceptance</h2><p>The acceptor reviews what its role requires and posts an accepted response referencing the presentment. The books now derive the commitment as discharged and preserve both the presenter and acceptor.</p><p>If the script later proves defective, the acceptance or related entries can be reversed. The original acceptance remains visible, along with the rationale for reversing it.</p></section>
+<section id="dishonor"><h2>Path B: dishonor and protest</h2><p>Suppose the dry-run report omits archived customers. The responder posts a dishonor with that ground. The commitment remains open and derives as <code>dishonored_unprotested</code>.</p><p>The presenter may revise and present again. Alternatively, a party may protest the dishonor to a board, making the disagreement visible in a named conversational region. The board does not magically reveal the correct answer; it provides a place in the books for the dispute and its premises.</p></section>
+<section id="what-shows"><h2>What this example makes visible</h2><ul><li>The terms existed before the candidate solution.</li><li>The solution and its cited evidence are distinct from its acceptance.</li><li>Acceptance names an answerable actor; it is not a hidden state in a workflow tool.</li><li>Refusal is an entry with ground, not silence.</li><li>Correction preserves the failed path rather than replacing history.</li><li>A later LLM can reconstruct what was attempted and where judgment entered.</li></ul></section>
+<section id="canonical"><h2>A simplified canonical sketch</h2><pre>{"id":"open-MIG-17","kind":"open","author":"team",...}
+{"id":"present-MIG-17-v1","kind":"present","author":"model-A", "accounts":["MIG-17"], "vouchers":["D-script-v1","D-test-run-v1"],...}
+{"id":"accept-MIG-17-v1","kind":"accept","author":"reviewer-B", "accounts":["MIG-17"], "predecessors":["present-MIG-17-v1"], "content":{"verdict":"accepted"},...}</pre><p>This is deliberately incomplete. The canonical form has nine required fields, and the verifier—not this illustration—is authoritative about conformance.</p></section>
+</article>
+<aside class="toc"><strong>On this page</strong><a href="#scenario">Scenario</a><a href="#entries">Entries</a><a href="#accept">Acceptance path</a><a href="#dishonor">Dishonor path</a><a href="#what-shows">What becomes visible</a><a href="#canonical">Canonical sketch</a></aside>
+</div>
+<nav class="page-links"><a href="humans-and-llms.html">← Humans and LLMs</a><a href="questions-and-status.html">Open questions →</a></nav>
+
+</main>
+<footer>
+  <div class="inner">
+    <span>Intent Accounting explanation</span>
+    <span><a href="llm-context.html">Single-page context for an LLM</a> · <a href="books.html">Read the live books</a></span>
+  </div>
+</footer>
+</body>
+</html>

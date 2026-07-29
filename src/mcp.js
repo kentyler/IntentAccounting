@@ -51,7 +51,7 @@ const tools = [
   },
   {
     name: "read_state",
-    description: "Read derived state: account balances (STANDING, OPEN, SETTLED) and current terms.",
+    description: "Read derived state: account balances (STANDING, OPEN, DISCHARGED) and current terms, with presentment conditions for OPEN accounts.",
     inputSchema: { type: "object", properties: {} },
     handler() {
       const postings = journal.read();
@@ -60,7 +60,7 @@ const tools = [
   },
   {
     name: "read_reconcile",
-    description: "Reconciliation report (W-4): open accounts without fulfill activity, fulfills awaiting distinct-author verification, gap accounts outstanding, unreadable candidates (non-settled accounts whose terms cite reversed postings or settled accounts). Derived from the journal alone.",
+    description: "Reconciliation report (W-4): open accounts without presentment activity, presentments awaiting acceptance, gap accounts outstanding, unreadable candidates, dishonored commitments, protested dishonors. Derived from the journal alone.",
     inputSchema: { type: "object", properties: {} },
     handler() {
       const postings = journal.read();

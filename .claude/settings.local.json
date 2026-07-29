@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python:*)",
+      "mcp__claude_ai_Google_Drive__search_files",
+      "Bash(comm:*)",
+      "Bash(python3:*)",
+      "Bash(xargs grep:*)",
+      "Bash(node:*)",
+      "Bash(grep:*)"
+    ]
+  }
+}

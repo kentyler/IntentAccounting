@@ -2,10 +2,11 @@
 /**
  * generate-site.js - W-1: Human browse surface
  *
- * Generates a static HTML site from the journal alone (term 2).
+ * Generates the live-books HTML surface from the journal alone (term 2).
  * Read-only: no write paths (term 1). Total coverage: every account,
  * posting, and document addressable (term 3). Provenance on every fact (term 4).
- * Orientation index (term 5). Legible to untrained (term 6). Stock browser (term 7).
+ * Orientation books index (term 5). Legible to untrained (term 6). Stock browser (term 7).
+ * The explanatory front door is public/index.html and is never overwritten here.
  *
  * Regenerate after any journal append: node generate-site.js
  */
@@ -59,13 +60,13 @@ function accountLink(id) {
 }
 
 function stateBadge(state) {
-  const colors = { STANDING: "#6b7280", OPEN: "#d97706", SETTLED: "#059669" };
+  const colors = { STANDING: "#6b7280", OPEN: "#d97706", SETTLED: "#059669", DISCHARGED: "#059669" };
   const color = colors[state] || "#374151";
   return `<span style="display:inline-block;padding:2px 8px;border-radius:4px;background:${color};color:#fff;font-size:0.85em;font-weight:600;">${state}</span>`;
 }
 
 function layout(title, body, breadcrumb) {
-  const nav = breadcrumb || `<a href="index.html">Index</a>`;
+  const nav = breadcrumb || `<a href="books.html">The books</a> &middot; <a href="index.html">Explanation</a>`;
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -111,7 +112,7 @@ ${body}
 function buildIndex(postings, accounts) {
   const standing = Object.entries(accounts).filter(([, a]) => a.state === "STANDING").sort((a, b) => a[0].localeCompare(b[0]));
   const open = Object.entries(accounts).filter(([, a]) => a.state === "OPEN").sort((a, b) => a[0].localeCompare(b[0]));
-  const settled = Object.entries(accounts).filter(([, a]) => a.state === "SETTLED").sort((a, b) => a[0].localeCompare(b[0]));
+  const discharged = Object.entries(accounts).filter(([, a]) => a.state === "DISCHARGED" || a.state === "SETTLED").sort((a, b) => a[0].localeCompare(b[0]));
 
   // Find latest bookmark
   let bookmark = null;
@@ -125,7 +126,10 @@ function buildIndex(postings, accounts) {
   // Find all documents
   const documents = postings.filter((p) => p.kind === "register");
 
-  let body = `<h1>Intent Accounting</h1>\n<p style="margin-bottom:0.75rem;"><a href="converse.html">Post to the books</a> &middot; <a href="boards.html">Boards</a></p>\n`;
+  let body = `<h1>The Books</h1>
+<p style="margin-bottom:0.75rem;max-width:70ch;">This is the generated, read-only view of the live Intent Accounting journal. For a narrative introduction, begin with the <a href="index.html">human-readable explanation</a> or the <a href="llm-context.html">single-page LLM context</a>.</p>
+<p style="margin-bottom:0.75rem;"><a href="converse.html">Post to the books</a> &middot; <a href="boards.html">Boards</a> &middot; <a href="index.html">Explanation</a></p>
+`;
 
   if (bookmark) {
     body += `<div class="bookmark">
@@ -137,7 +141,7 @@ function buildIndex(postings, accounts) {
   }
 
   // Orientation: counts
-  body += `<p class="count">${standing.length} standing, ${open.length} open, ${settled.length} settled, ${postings.length} total postings, ${documents.length} registered documents</p>\n`;
+  body += `<p class="count">${standing.length} standing, ${open.length} open, ${discharged.length} discharged, ${postings.length} total postings, ${documents.length} registered documents</p>\n`;
 
   // Standing accounts (the constitution)
   body += `<h2>Standing accounts (${standing.length})</h2>\n`;
@@ -148,9 +152,9 @@ function buildIndex(postings, accounts) {
   body += `<h2>Open accounts (${open.length})</h2>\n`;
   body += accountTable(open);
 
-  // Settled accounts
-  body += `<h2>Settled accounts (${settled.length})</h2>\n`;
-  body += accountTable(settled, true);
+  // Discharged accounts
+  body += `<h2>Discharged accounts (${discharged.length})</h2>\n`;
+  body += accountTable(discharged, true);
 
   // Registered documents
   body += `<h2>Registered documents (${documents.length})</h2>\n<table><tr><th>Doc ID</th><th>Type</th><th>Location</th><th>Registered by</th></tr>\n`;
@@ -179,11 +183,11 @@ function buildIndex(postings, accounts) {
   });
   body += `</table>\n`;
 
-  return layout("Index", body, `<strong>Intent Accounting</strong>`);
+  return layout("Books", body, `<strong>The books</strong> &middot; <a href="index.html">Explanation</a>`);
 }
 
 function accountTable(entries, showSettlement) {
-  let html = `<table><tr><th>Account</th><th>Kind</th><th>State</th><th>Terms</th>${showSettlement ? "<th>Settled by</th>" : ""}</tr>\n`;
+  let html = `<table><tr><th>Account</th><th>Kind</th><th>State</th><th>Terms</th>${showSettlement ? "<th>Discharged by</th>" : ""}</tr>\n`;
   for (const [id, a] of entries) {
     let terms = String(a.terms || "").split(/\s+/).join(" ");
     if (terms.length > 120) terms = terms.substring(0, 117) + "...";
@@ -240,7 +244,10 @@ function buildAccountPage(accountId, accountInfo, postings, allAccounts) {
 
   // Settlement info
   if (accountInfo.settled_by) {
-    body += `<h2>Settlement</h2>\n<p>Fulfilled by ${postingLink(accountInfo.settled_by[0])}, verified by ${postingLink(accountInfo.settled_by[1])}</p>\n`;
+    const kinds = accountInfo.settled_by_kinds || ["fulfill", "verify"];
+    body += `<h2>Discharge</h2>
+<p>${esc(kinds[0])} ${postingLink(accountInfo.settled_by[0])}, ${esc(kinds[1])} ${postingLink(accountInfo.settled_by[1])}</p>
+`;
   }
 
   // Amendment history
@@ -274,7 +281,7 @@ function buildAccountPage(accountId, accountInfo, postings, allAccounts) {
     }
   }
 
-  return layout(accountId, body, `<a href="index.html">Index</a> / ${esc(accountId)}`);
+  return layout(accountId, body, `<a href="books.html">The books</a> / ${esc(accountId)} &middot; <a href="index.html">Explanation</a>`);
 }
 
 // --------------- build posting pages ---------------
@@ -336,7 +343,7 @@ function buildPostingPage(p) {
   }
   body += `<h2>Canonical form</h2>\n<pre style="background:#f3f4f6;padding:0.75rem;border-radius:6px;overflow-x:auto;font-size:0.8rem;color:#374151;">${esc(JSON.stringify(canonical))}</pre>\n`;
 
-  return layout(`Posting ${p.id}`, body, `<a href="index.html">Index</a> / ${p.accounts.length ? accountLink(p.accounts[0]) + " / " : ""}${esc(p.id)}`);
+  return layout(`Posting ${p.id}`, body, `<a href="books.html">The books</a> / ${p.accounts.length ? accountLink(p.accounts[0]) + " / " : ""}${esc(p.id)} &middot; <a href="index.html">Explanation</a>`);
 }
 
 // --------------- build board account page (enriched view) ---------------
@@ -464,7 +471,7 @@ function buildBoardAccountPage(boardId, accountInfo, boardData, postings, allAcc
     body += renderPostingCard(p);
   }
 
-  return layout(boardId, body, `<a href="index.html">Index</a> / <a href="boards.html">Boards</a> / ${esc(boardId)}`);
+  return layout(boardId, body, `<a href="books.html">The books</a> / <a href="boards.html">Boards</a> / ${esc(boardId)} &middot; <a href="index.html">Explanation</a>`);
 }
 
 // --------------- build boards index page ---------------
@@ -522,7 +529,7 @@ function buildBoardsIndex(boardData, accounts) {
     }
   }
 
-  return layout("Boards", body, `<a href="index.html">Index</a> / Boards`);
+  return layout("Boards", body, `<a href="books.html">The books</a> / Boards &middot; <a href="index.html">Explanation</a>`);
 }
 
 // --------------- main ---------------
@@ -531,8 +538,8 @@ const postings = loadJournal();
 const accounts = derive(postings);
 const boardData = deriveBoards(postings, accounts);
 
-// Generate index
-fs.writeFileSync(path.join(PUBLIC, "index.html"), buildIndex(postings, accounts));
+// Generate the live books index. public/index.html is the explanatory front door.
+fs.writeFileSync(path.join(PUBLIC, "books.html"), buildIndex(postings, accounts));
 
 // Generate account pages
 for (const [id, info] of Object.entries(accounts)) {
@@ -562,5 +569,5 @@ for (const p of postings) {
 fs.writeFileSync(path.join(PUBLIC, "boards.html"), buildBoardsIndex(boardData, accounts));
 
 const boardCount = Object.keys(boardData.boards).length;
-console.log(`Generated ${Object.keys(accounts).length} account pages (${boardCount} board), ${postings.length} posting pages, 1 index, 1 boards index`);
+console.log(`Generated ${Object.keys(accounts).length} account pages (${boardCount} board), ${postings.length} posting pages, 1 books index, 1 boards index`);
 console.log(`Site: ${PUBLIC}`);

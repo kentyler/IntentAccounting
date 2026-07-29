@@ -468,6 +468,39 @@ function deriveBoards(postings, accounts) {
     ...infoDiag,
   ];
 
+  // Protest derivation: protests laid before each board
+  const live = livePostings(postings);
+  const byId = {};
+  for (const p of postings) byId[p.id] = p;
+  const protestsByBoard = {};
+  for (const boardId of boardIds) protestsByBoard[boardId] = [];
+
+  for (const p of live) {
+    if (p.kind !== "protest") continue;
+    for (const boardId of boardIds) {
+      if (!p.accounts.includes(boardId)) continue;
+      const dishonorPreds = p.predecessors.filter(
+        (r) => byId[r] && byId[r].kind === "dishonor"
+      );
+      if (dishonorPreds.length !== 1) continue;
+      // Answered: any later live posting on this board cites the protest
+      const answered = live.some(
+        (q) => q.accounts.includes(boardId)
+          && q.predecessors.includes(p.id)
+          && q !== p
+      );
+      protestsByBoard[boardId].push({
+        protest: p.id,
+        dishonor: dishonorPreds[0],
+        author: p.author,
+        status: answered ? "answered" : "unanswered",
+      });
+    }
+  }
+  for (const boardId of boardIds) {
+    protestsByBoard[boardId].sort((a, b) => a.protest.localeCompare(b.protest));
+  }
+
   // Build per-board map
   const boards = {};
   for (const boardId of boardIds) {
@@ -478,6 +511,7 @@ function deriveBoards(postings, accounts) {
       premises: premises[boardId] || { current: [], history: [] },
       incoming_exposures: exposures.filter((e) => e.target_board === boardId),
       outgoing_exposures: exposures.filter((e) => e.source_board === boardId),
+      protests_laid: protestsByBoard[boardId] || [],
     };
   }
 
